@@ -3,7 +3,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package egibo.model;
-
 import java.time.*;
 
 public abstract class Task {
@@ -16,14 +15,28 @@ public abstract class Task {
     private Status status;
     
     Task (String title, double hours, int importance, LocalDate dueDate){
+         if (Double.isNaN(hours) || hours <= 0) {
+        throw new IllegalArgumentException("Hours must be greater than 0.");
+        }  
         if (title == null || title.trim().isEmpty()){
             this.title = "Task" + ++taskCounter;
-        }
-        if (hours <= 0){
-            throw new IllegalArgumentException("Hours must be greater than 0 :\\");
+        } 
+        else {
+            this.title = title.trim();
         }
         
-        this.title = title;
+        if (hours > StudentProfile.MAX_CAPACITY){
+            throw new IllegalArgumentException("A single task cannot be more than " + (int) StudentProfile.MAX_CAPACITY + "hours.");
+        }
+        
+        if (importance < 1 || importance > 5){
+            throw new IllegalArgumentException("Importance must be from 1 to 5.");
+        }
+        
+        if (dueDate == null){
+            this.dueDate = LocalDate.now();
+        }
+        
         this.hours = hours;
         this.importance = importance;
         this.dueDate = dueDate;
@@ -42,6 +55,17 @@ public abstract class Task {
         return status == Status.PENDING && LocalDate.now().isAfter(dueDate);
     }
     
+    public String getPriorityString(){
+        if (importance >= 4) { 
+            return "High"; 
+        }
+        else if (importance == 3) { 
+            return "Medium"; 
+        }
+        
+        return "Low";
+    }
+    
     public String getTitle(){
         return title;}
     public double getHours(){ 
@@ -54,4 +78,6 @@ public abstract class Task {
         return status; }
     
     public abstract boolean occupiesTime(LocalDateTime now);
+    public abstract String getTypeLabel();
+    public abstract String getScheduleText();
 }

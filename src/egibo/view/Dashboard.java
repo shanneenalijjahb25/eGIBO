@@ -7,6 +7,7 @@ package egibo.view;
 /**
  *
  * @author Jon Reynol Burce
+ * @author Shanneen Alijjah Boarao
  */
 public class Dashboard extends javax.swing.JFrame {
     
@@ -15,20 +16,62 @@ public class Dashboard extends javax.swing.JFrame {
     /**
      * Creates new form Dashboard
      */
-    
-    private egibo.model.StudentProfile studentProfile;
-    private egibo.model.TaskManager taskManager;
+    private final egibo.model.StudentProfile studentProfile;
+    private final egibo.model.TaskManager taskManager;
 
-    public Dashboard() {
+    public Dashboard(egibo.model.StudentProfile studentProfile, egibo.model.TaskManager taskManager) {
+        this.studentProfile = studentProfile;
+        this.taskManager = taskManager;
         initComponents();
+        setLocationRelativeTo(null);
+        refreshDashboard(); // Populates tables, labels, and user name on load
     }
     
-    public Dashboard(egibo.model.StudentProfile studentProfile,
-                 egibo.model.TaskManager taskManager) {
-    this();
-    this.studentProfile = studentProfile;
-    this.taskManager = taskManager;
+    private void refreshDashboard() {
+    // 1. Welcome Header & Date
+    // (Replace lblWelcome and lblDate with your actual JLabel variable names from the designer)
+    lblWelcome.setText("Welcome, " + studentProfile.name() + "!");
+    lblDate.setText(java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("EEEE, MMM d, yyyy")));
+
+    // 2. Top Metric Cards
+    int pendingCount = taskManager.getPendingTasks().size();
+    int completedCount = taskManager.getFinishedTasks().size();
+    double totalHours = taskManager.getTotalRemainingHours();
+    double capacity = studentProfile.dailyCapacity();
+
+    // Push values to JLabels
+    lblPendingCount.setText(String.valueOf(pendingCount));
+    lblCompletedCount.setText(String.valueOf(completedCount));
+    lblCapacityMetric.setText(totalHours + " / " + capacity + " hrs");
+    
+    // Workload Risk Evaluation
+    String risk = "Low";
+    if (totalHours > capacity) {
+        risk = "Overloaded! ⚠️";
+    } else if (totalHours >= capacity * 0.8) {
+        risk = "High";
+    } else if (totalHours >= capacity * 0.5) {
+        risk = "Moderate";
     }
+    lblWorkloadRisk.setText(risk);
+
+    // 3. Populate Table Task List using DefaultTableModel
+    javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) tblTasks.getModel();
+    model.setRowCount(0); // Clear existing rows
+
+    for (egibo.model.Task t : taskManager.getRankedTasks()) {
+        model.addRow(new Object[]{
+            t.getTitle(),
+            t.getTypeLabel(),
+            t.getHours() + " hrs",
+            t.getPriorityString(),
+            t.getScheduleText(),
+            t.getStatus()
+        });
+    }
+}
+    
+    
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -40,49 +83,41 @@ public class Dashboard extends javax.swing.JFrame {
     private void initComponents() {
 
         pnlHeader = new javax.swing.JPanel();
-        lblTitle = new javax.swing.JLabel();
-        lblGreeting = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         lblHoursTitle = new javax.swing.JLabel();
         lblWorkloadHours = new javax.swing.JLabel();
-        lblCurrentDate = new javax.swing.JLabel();
+        lblDate = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        lblTitle = new javax.swing.JLabel();
+        lblWelcome = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
         pnlUpcomingTasks = new javax.swing.JPanel();
         lblUpcomingTitle = new javax.swing.JLabel();
-        spUpcomingTasks = new javax.swing.JScrollPane();
+        btnAddTask = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblTasks = new javax.swing.JTable();
-        btnAddTask = new javax.swing.JButton();
-        btnResetDay = new javax.swing.JButton();
-        btnEditCapacity = new javax.swing.JButton();
+        lblEditCapacity = new javax.swing.JButton();
+        lblResetDay = new javax.swing.JButton();
         pnlSidebar = new javax.swing.JPanel();
         btnDashboard = new javax.swing.JButton();
         btnMyTasks = new javax.swing.JButton();
-        btnSchedule = new javax.swing.JButton();
-        btnWorkload = new javax.swing.JButton();
-        btnFeasibility = new javax.swing.JButton();
-        btnProfile = new javax.swing.JButton();
+        btnClose = new javax.swing.JButton();
         pnlContent = new javax.swing.JPanel();
-        lblPendingTitle = new javax.swing.JLabel();
-        lblPendingVal = new javax.swing.JLabel();
+        lblCompletedTitle2 = new javax.swing.JLabel();
+        lblPendingCount = new javax.swing.JLabel();
         pnlCompletedCard = new javax.swing.JPanel();
         lblCompletedTitle = new javax.swing.JLabel();
-        lblCapacityVal = new javax.swing.JLabel();
+        lblCapacityMetric = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         lblRiskTitle = new javax.swing.JLabel();
-        lblRiskLevel = new javax.swing.JLabel();
+        lblWorkloadRisk = new javax.swing.JLabel();
         pnlCompletedCard1 = new javax.swing.JPanel();
         lblCompletedTitle1 = new javax.swing.JLabel();
-        lblCompletedVal1 = new javax.swing.JLabel();
+        lblCompletedCount = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         pnlHeader.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-
-        lblTitle.setFont(new java.awt.Font("Cascadia Code", 1, 36)); // NOI18N
-        lblTitle.setText("eGIBO");
-
-        lblGreeting.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        lblGreeting.setText("Welcome, [Name]!");
 
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
@@ -112,36 +147,79 @@ public class Dashboard extends javax.swing.JFrame {
                 .addComponent(lblWorkloadHours))
         );
 
-        lblCurrentDate.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        lblCurrentDate.setText("Date");
+        lblDate.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
+        lblDate.setText("Date: ");
+
+        jPanel3.setBackground(new java.awt.Color(0, 102, 102));
+        jPanel3.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, null, new java.awt.Color(255, 255, 255), new java.awt.Color(204, 204, 204), null));
+
+        lblTitle.setFont(new java.awt.Font("Footlight MT Light", 1, 48)); // NOI18N
+        lblTitle.setForeground(new java.awt.Color(255, 255, 255));
+        lblTitle.setText("eGIBO");
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap(105, Short.MAX_VALUE)
+                .addComponent(lblTitle)
+                .addGap(15, 15, 15))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap(17, Short.MAX_VALUE)
+                .addComponent(lblTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+
+        lblWelcome.setFont(new java.awt.Font("Times New Roman", 2, 24)); // NOI18N
+        lblWelcome.setText("Welcome ");
+        lblWelcome.setName("lblWelcome"); // NOI18N
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 60)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(0, 102, 102));
+        jLabel1.setText("|");
+        jLabel1.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
 
         javax.swing.GroupLayout pnlHeaderLayout = new javax.swing.GroupLayout(pnlHeader);
         pnlHeader.setLayout(pnlHeaderLayout);
         pnlHeaderLayout.setHorizontalGroup(
             pnlHeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlHeaderLayout.createSequentialGroup()
-                .addGap(850, 850, 850)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblWelcome, javax.swing.GroupLayout.PREFERRED_SIZE, 370, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(390, 390, 390)
+                .addGroup(pnlHeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnlHeaderLayout.createSequentialGroup()
+                        .addGap(355, 355, 355)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(pnlHeaderLayout.createSequentialGroup()
+                        .addGap(112, 112, 112)
+                        .addComponent(lblDate, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(pnlHeaderLayout.createSequentialGroup()
-                .addGap(60, 60, 60)
-                .addComponent(lblTitle)
-                .addGap(146, 146, 146)
-                .addComponent(lblGreeting)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(lblCurrentDate)
-                .addGap(104, 104, 104))
         );
         pnlHeaderLayout.setVerticalGroup(
             pnlHeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlHeaderLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(pnlHeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblTitle)
-                    .addComponent(lblGreeting)
-                    .addComponent(lblCurrentDate))
-                .addGap(32, 32, 32)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(pnlHeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnlHeaderLayout.createSequentialGroup()
+                        .addGap(68, 68, 68)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(pnlHeaderLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(pnlHeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblWelcome)))
+                    .addGroup(pnlHeaderLayout.createSequentialGroup()
+                        .addGap(39, 39, 39)
+                        .addComponent(lblDate)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -149,7 +227,13 @@ public class Dashboard extends javax.swing.JFrame {
         pnlUpcomingTasks.setForeground(new java.awt.Color(255, 255, 255));
 
         lblUpcomingTitle.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lblUpcomingTitle.setText("TODAY'S TASK");
+        lblUpcomingTitle.setText("==========================+TODAY'S TASK +=======================");
+
+        btnAddTask.setFont(new java.awt.Font("Segoe UI Historic", 1, 18)); // NOI18N
+        btnAddTask.setForeground(new java.awt.Color(0, 102, 102));
+        btnAddTask.setText("+ Add Task");
+        btnAddTask.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 153, 153), 2));
+        btnAddTask.addActionListener(this::btnAddTaskActionPerformed);
 
         tblTasks.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -164,226 +248,242 @@ public class Dashboard extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(tblTasks);
 
-        spUpcomingTasks.setViewportView(jScrollPane1);
+        lblEditCapacity.setFont(new java.awt.Font("Segoe UI Historic", 1, 14)); // NOI18N
+        lblEditCapacity.setForeground(new java.awt.Color(0, 153, 153));
+        lblEditCapacity.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 153, 153)));
+        lblEditCapacity.setLabel("Edit Capacity");
+        lblEditCapacity.addActionListener(this::lblEditCapacityActionPerformed);
 
-        btnAddTask.setText("+ Add Task");
-        btnAddTask.addActionListener(this::btnAddTaskActionPerformed);
-
-        btnResetDay.setText("Manual Day Reset");
-
-        btnEditCapacity.setText("Modify Capacity");
+        lblResetDay.setFont(new java.awt.Font("Segoe UI Historic", 1, 14)); // NOI18N
+        lblResetDay.setForeground(new java.awt.Color(0, 153, 153));
+        lblResetDay.setText("Reset Day");
+        lblResetDay.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 153, 153)));
+        lblResetDay.addActionListener(this::lblResetDayActionPerformed);
 
         javax.swing.GroupLayout pnlUpcomingTasksLayout = new javax.swing.GroupLayout(pnlUpcomingTasks);
         pnlUpcomingTasks.setLayout(pnlUpcomingTasksLayout);
         pnlUpcomingTasksLayout.setHorizontalGroup(
             pnlUpcomingTasksLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlUpcomingTasksLayout.createSequentialGroup()
-                .addContainerGap(58, Short.MAX_VALUE)
                 .addGroup(pnlUpcomingTasksLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlUpcomingTasksLayout.createSequentialGroup()
-                        .addComponent(btnAddTask, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnResetDay)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnEditCapacity)
-                        .addGap(197, 197, 197))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlUpcomingTasksLayout.createSequentialGroup()
-                        .addComponent(spUpcomingTasks, javax.swing.GroupLayout.PREFERRED_SIZE, 708, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(36, 36, 36))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlUpcomingTasksLayout.createSequentialGroup()
-                        .addComponent(lblUpcomingTitle)
-                        .addGap(343, 343, 343))))
+                    .addGroup(pnlUpcomingTasksLayout.createSequentialGroup()
+                        .addGap(23, 23, 23)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 696, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(pnlUpcomingTasksLayout.createSequentialGroup()
+                        .addGap(94, 94, 94)
+                        .addComponent(btnAddTask, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(30, 30, 30)
+                        .addComponent(lblEditCapacity, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(27, 27, 27)
+                        .addComponent(lblResetDay, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(pnlUpcomingTasksLayout.createSequentialGroup()
+                        .addGap(63, 63, 63)
+                        .addComponent(lblUpcomingTitle)))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
         pnlUpcomingTasksLayout.setVerticalGroup(
             pnlUpcomingTasksLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlUpcomingTasksLayout.createSequentialGroup()
-                .addGap(17, 17, 17)
+                .addGap(21, 21, 21)
                 .addComponent(lblUpcomingTitle)
                 .addGap(18, 18, 18)
-                .addComponent(spUpcomingTasks, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
-                .addGroup(pnlUpcomingTasksLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnEditCapacity)
-                    .addComponent(btnResetDay)
-                    .addComponent(btnAddTask))
-                .addGap(20, 20, 20))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 222, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addGroup(pnlUpcomingTasksLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnAddTask, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(pnlUpcomingTasksLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(lblResetDay, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lblEditCapacity, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(35, 35, 35))
         );
+
+        lblEditCapacity.getAccessibleContext().setAccessibleName("btnEditCapacity");
+        lblResetDay.getAccessibleContext().setAccessibleName("btnResetDay");
 
         pnlSidebar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
+        btnDashboard.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         btnDashboard.setText("Dashboard");
+        btnDashboard.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 102, 102), 2, true));
 
+        btnMyTasks.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         btnMyTasks.setText("My Tasks");
+        btnMyTasks.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 102, 102), 2, true));
 
-        btnSchedule.setText("Schedule");
-
-        btnWorkload.setText("Workload ");
-
-        btnFeasibility.setText("Check Availability");
-
-        btnProfile.setText("My Profile");
+        btnClose.setForeground(new java.awt.Color(0, 102, 102));
+        btnClose.setText("Close ");
+        btnClose.addActionListener(this::btnCloseActionPerformed);
 
         javax.swing.GroupLayout pnlSidebarLayout = new javax.swing.GroupLayout(pnlSidebar);
         pnlSidebar.setLayout(pnlSidebarLayout);
         pnlSidebarLayout.setHorizontalGroup(
             pnlSidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlSidebarLayout.createSequentialGroup()
-                .addGroup(pnlSidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pnlSidebarLayout.createSequentialGroup()
-                        .addGap(29, 29, 29)
+                .addGroup(pnlSidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, pnlSidebarLayout.createSequentialGroup()
+                        .addGap(21, 21, 21)
                         .addGroup(pnlSidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(pnlSidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(btnSchedule)
-                                .addComponent(btnMyTasks)
-                                .addComponent(btnDashboard))
-                            .addGroup(pnlSidebarLayout.createSequentialGroup()
-                                .addComponent(btnWorkload)
-                                .addGap(10, 10, 10))))
+                            .addComponent(btnDashboard, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnMyTasks, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(pnlSidebarLayout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(btnFeasibility, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(pnlSidebarLayout.createSequentialGroup()
-                        .addGap(37, 37, 37)
-                        .addComponent(btnProfile)))
-                .addContainerGap(31, Short.MAX_VALUE))
+                        .addComponent(btnClose, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(21, Short.MAX_VALUE))
         );
         pnlSidebarLayout.setVerticalGroup(
             pnlSidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlSidebarLayout.createSequentialGroup()
                 .addGap(27, 27, 27)
-                .addComponent(btnDashboard)
+                .addComponent(btnDashboard, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnMyTasks)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnSchedule)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnWorkload)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnFeasibility)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 251, Short.MAX_VALUE)
-                .addComponent(btnProfile)
-                .addGap(15, 15, 15))
+                .addComponent(btnMyTasks, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnClose)
+                .addGap(24, 24, 24))
         );
 
-        pnlContent.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        pnlContent.setForeground(java.awt.Color.darkGray);
+        pnlContent.setBackground(new java.awt.Color(196, 225, 225));
+        pnlContent.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        pnlContent.setForeground(new java.awt.Color(255, 255, 255));
 
-        lblPendingTitle.setText("Pending Tasks");
+        lblCompletedTitle2.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
+        lblCompletedTitle2.setForeground(new java.awt.Color(0, 102, 102));
+        lblCompletedTitle2.setText("Pending Tasks");
 
-        lblPendingVal.setText("Count");
+        lblPendingCount.setFont(new java.awt.Font("Segoe UI Historic", 1, 24)); // NOI18N
+        lblPendingCount.setText("      0");
+        lblPendingCount.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        lblPendingCount.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
         javax.swing.GroupLayout pnlContentLayout = new javax.swing.GroupLayout(pnlContent);
         pnlContent.setLayout(pnlContentLayout);
         pnlContentLayout.setHorizontalGroup(
             pnlContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlContentLayout.createSequentialGroup()
-                .addContainerGap(45, Short.MAX_VALUE)
                 .addGroup(pnlContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlContentLayout.createSequentialGroup()
-                        .addComponent(lblPendingTitle)
-                        .addGap(42, 42, 42))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlContentLayout.createSequentialGroup()
-                        .addComponent(lblPendingVal, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(57, 57, 57))))
+                    .addGroup(pnlContentLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(lblCompletedTitle2, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(pnlContentLayout.createSequentialGroup()
+                        .addGap(23, 23, 23)
+                        .addComponent(lblPendingCount, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(23, Short.MAX_VALUE))
         );
         pnlContentLayout.setVerticalGroup(
             pnlContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlContentLayout.createSequentialGroup()
-                .addContainerGap(22, Short.MAX_VALUE)
-                .addComponent(lblPendingTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(pnlContentLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblCompletedTitle2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblPendingVal)
-                .addGap(22, 22, 22))
+                .addComponent(lblPendingCount, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(14, Short.MAX_VALUE))
         );
 
-        pnlCompletedCard.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        pnlCompletedCard.setBackground(new java.awt.Color(196, 225, 225));
+        pnlCompletedCard.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
 
+        lblCompletedTitle.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
+        lblCompletedTitle.setForeground(new java.awt.Color(0, 102, 102));
         lblCompletedTitle.setText("Capacity");
 
-        lblCapacityVal.setText("Count");
+        lblCapacityMetric.setFont(new java.awt.Font("Segoe UI Historic", 1, 24)); // NOI18N
+        lblCapacityMetric.setText("0");
+        lblCapacityMetric.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        lblCapacityMetric.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
         javax.swing.GroupLayout pnlCompletedCardLayout = new javax.swing.GroupLayout(pnlCompletedCard);
         pnlCompletedCard.setLayout(pnlCompletedCardLayout);
         pnlCompletedCardLayout.setHorizontalGroup(
             pnlCompletedCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlCompletedCardLayout.createSequentialGroup()
-                .addGap(49, 49, 49)
-                .addGroup(pnlCompletedCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblCompletedTitle)
-                    .addGroup(pnlCompletedCardLayout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(lblCapacityVal, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(51, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(lblCompletedTitle)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlCompletedCardLayout.createSequentialGroup()
+                .addContainerGap(63, Short.MAX_VALUE)
+                .addComponent(lblCapacityMetric, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(22, 22, 22))
         );
         pnlCompletedCardLayout.setVerticalGroup(
             pnlCompletedCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlCompletedCardLayout.createSequentialGroup()
-                .addGap(21, 21, 21)
+                .addContainerGap()
                 .addComponent(lblCompletedTitle)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblCapacityVal)
-                .addContainerGap(24, Short.MAX_VALUE))
+                .addComponent(lblCapacityMetric, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jPanel2.setBackground(new java.awt.Color(196, 225, 225));
+        jPanel2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
 
+        lblRiskTitle.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
+        lblRiskTitle.setForeground(new java.awt.Color(0, 102, 102));
         lblRiskTitle.setText("Workload Risk");
 
-        lblRiskLevel.setText("Risk");
+        lblWorkloadRisk.setFont(new java.awt.Font("Segoe UI Historic", 1, 24)); // NOI18N
+        lblWorkloadRisk.setText("      0");
+        lblWorkloadRisk.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        lblWorkloadRisk.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap(33, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addComponent(lblRiskTitle)
-                        .addGap(38, 38, 38))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addComponent(lblRiskLevel, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(49, 49, 49))))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(lblRiskTitle))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(36, 36, 36)
+                        .addComponent(lblWorkloadRisk, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(24, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(25, 25, 25)
+                .addContainerGap()
                 .addComponent(lblRiskTitle)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblRiskLevel)
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addComponent(lblWorkloadRisk, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        pnlCompletedCard1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.white, null));
+        pnlCompletedCard1.setBackground(new java.awt.Color(196, 225, 225));
+        pnlCompletedCard1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED, java.awt.Color.white, null));
         pnlCompletedCard1.setForeground(java.awt.Color.gray);
 
+        lblCompletedTitle1.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
+        lblCompletedTitle1.setForeground(new java.awt.Color(0, 102, 102));
         lblCompletedTitle1.setText("Completed Tasks");
 
-        lblCompletedVal1.setText("Count");
+        lblCompletedCount.setFont(new java.awt.Font("Segoe UI Historic", 1, 24)); // NOI18N
+        lblCompletedCount.setText("      0");
+        lblCompletedCount.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        lblCompletedCount.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
         javax.swing.GroupLayout pnlCompletedCard1Layout = new javax.swing.GroupLayout(pnlCompletedCard1);
         pnlCompletedCard1.setLayout(pnlCompletedCard1Layout);
         pnlCompletedCard1Layout.setHorizontalGroup(
             pnlCompletedCard1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlCompletedCard1Layout.createSequentialGroup()
-                .addGroup(pnlCompletedCard1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pnlCompletedCard1Layout.createSequentialGroup()
-                        .addGap(43, 43, 43)
-                        .addComponent(lblCompletedTitle1))
-                    .addGroup(pnlCompletedCard1Layout.createSequentialGroup()
-                        .addGap(72, 72, 72)
-                        .addComponent(lblCompletedVal1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(37, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(lblCompletedTitle1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlCompletedCard1Layout.createSequentialGroup()
+                .addContainerGap(37, Short.MAX_VALUE)
+                .addComponent(lblCompletedCount, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(25, 25, 25))
         );
         pnlCompletedCard1Layout.setVerticalGroup(
             pnlCompletedCard1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlCompletedCard1Layout.createSequentialGroup()
-                .addGap(21, 21, 21)
+                .addContainerGap()
                 .addComponent(lblCompletedTitle1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblCompletedVal1)
-                .addContainerGap(24, Short.MAX_VALUE))
+                .addComponent(lblCompletedCount, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -393,46 +493,98 @@ public class Dashboard extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(pnlSidebar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(53, 53, 53)
                         .addComponent(pnlContent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(28, 28, 28)
+                        .addGap(31, 31, 31)
                         .addComponent(pnlCompletedCard1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(32, 32, 32)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(pnlCompletedCard, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(24, 24, 24)
+                        .addGap(18, 18, 18)
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(27, 27, 27)
-                        .addComponent(pnlUpcomingTasks, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addComponent(pnlHeader, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(pnlUpcomingTasks, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(18, Short.MAX_VALUE))
+            .addComponent(pnlHeader, javax.swing.GroupLayout.PREFERRED_SIZE, 938, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(pnlHeader, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(pnlHeader, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(pnlCompletedCard1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(pnlCompletedCard, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(pnlContent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(47, 47, 47)
-                        .addComponent(pnlUpcomingTasks, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(pnlSidebar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(108, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(pnlCompletedCard1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(pnlCompletedCard, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(pnlContent, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(pnlUpcomingTasks, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(pnlSidebar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAddTaskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddTaskActionPerformed
-        // TODO add your handling code here:
+        String title = javax.swing.JOptionPane.showInputDialog(this, "Enter Task Title:");
+        if (title == null || title.trim().isEmpty()) return;
+
+        try {
+            double hours = Double.parseDouble(javax.swing.JOptionPane.showInputDialog(this, "Enter Estimated Hours:"));
+            int importance = Integer.parseInt(javax.swing.JOptionPane.showInputDialog(this, "Enter Importance (1 to 5):"));
+
+            // Add as Flexible Task by default, or check your task type inputs
+            taskManager.addFlexibleTask(title, hours, importance, java.time.LocalDate.now());
+
+            refreshDashboard(); // Refresh UI instantly
+        } catch (NumberFormatException e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Please enter valid numeric values for hours and importance.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        } catch (IllegalArgumentException e) {
+            javax.swing.JOptionPane.showMessageDialog(this, e.getMessage(), "Validation Error", javax.swing.JOptionPane.WARNING_MESSAGE);
+        }        // TODO add your handling code here:
     }//GEN-LAST:event_btnAddTaskActionPerformed
+
+    private void lblEditCapacityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lblEditCapacityActionPerformed
+       
+    String input = javax.swing.JOptionPane.showInputDialog(this, "Enter new daily work capacity (max 16 hrs):", studentProfile.dailyCapacity());
+        if (input == null) return;
+
+        try {
+            double newCap = Double.parseDouble(input);
+            studentProfile.setDailyCapacity(newCap);
+            refreshDashboard();
+            javax.swing.JOptionPane.showMessageDialog(this, "Capacity updated successfully!");
+        } catch (NumberFormatException e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Please enter a valid number.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        } catch (IllegalArgumentException e) {
+            javax.swing.JOptionPane.showMessageDialog(this, e.getMessage(), "Invalid Capacity", javax.swing.JOptionPane.WARNING_MESSAGE);
+        }    // TODO add your handling code here:
+    }//GEN-LAST:event_lblEditCapacityActionPerformed
+
+    private void lblResetDayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lblResetDayActionPerformed
+        int confirm = javax.swing.JOptionPane.showConfirmDialog(this, "Are you sure you want to clear all tasks for a fresh day?", "Reset Day", javax.swing.JOptionPane.YES_NO_OPTION);
+    if (confirm == javax.swing.JOptionPane.YES_OPTION) {
+        taskManager.clear();
+        refreshDashboard();
+        }        // TODO add your handling code here:
+    }//GEN-LAST:event_lblResetDayActionPerformed
+
+    private void btnCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseActionPerformed
+        int confirm = javax.swing.JOptionPane.showConfirmDialog(
+        this, 
+        "Are you sure you want to exit eGIBO?", 
+        "Confirm Exit", 
+        javax.swing.JOptionPane.YES_NO_OPTION, 
+        javax.swing.JOptionPane.QUESTION_MESSAGE
+    );
+    
+    if (confirm == javax.swing.JOptionPane.YES_OPTION) {
+        System.exit(0); // Completely kills the Java application process
+    } // Closes just this current window safely
+    }//GEN-LAST:event_btnCloseActionPerformed
 
     /**
      * @param args the command line arguments
@@ -456,43 +608,45 @@ public class Dashboard extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new Dashboard().setVisible(true));
+       java.awt.EventQueue.invokeLater(() -> {
+        egibo.model.StudentProfile testProfile = new egibo.model.StudentProfile("Test User", 8.0);
+        egibo.model.TaskManager testManager = new egibo.model.TaskManager();
+        new Dashboard(testProfile, testManager).setVisible(true);
+        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAddTask;
+    private javax.swing.JButton btnClose;
     private javax.swing.JButton btnDashboard;
-    private javax.swing.JButton btnEditCapacity;
-    private javax.swing.JButton btnFeasibility;
     private javax.swing.JButton btnMyTasks;
-    private javax.swing.JButton btnProfile;
-    private javax.swing.JButton btnResetDay;
-    private javax.swing.JButton btnSchedule;
-    private javax.swing.JButton btnWorkload;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JLabel lblCapacityVal;
+    private javax.swing.JLabel lblCapacityMetric;
+    private javax.swing.JLabel lblCompletedCount;
     private javax.swing.JLabel lblCompletedTitle;
     private javax.swing.JLabel lblCompletedTitle1;
-    private javax.swing.JLabel lblCompletedVal1;
-    private javax.swing.JLabel lblCurrentDate;
-    private javax.swing.JLabel lblGreeting;
+    private javax.swing.JLabel lblCompletedTitle2;
+    private javax.swing.JLabel lblDate;
+    private javax.swing.JButton lblEditCapacity;
     private javax.swing.JLabel lblHoursTitle;
-    private javax.swing.JLabel lblPendingTitle;
-    private javax.swing.JLabel lblPendingVal;
-    private javax.swing.JLabel lblRiskLevel;
+    private javax.swing.JLabel lblPendingCount;
+    private javax.swing.JButton lblResetDay;
     private javax.swing.JLabel lblRiskTitle;
     private javax.swing.JLabel lblTitle;
     private javax.swing.JLabel lblUpcomingTitle;
+    private javax.swing.JLabel lblWelcome;
     private javax.swing.JLabel lblWorkloadHours;
+    private javax.swing.JLabel lblWorkloadRisk;
     private javax.swing.JPanel pnlCompletedCard;
     private javax.swing.JPanel pnlCompletedCard1;
     private javax.swing.JPanel pnlContent;
     private javax.swing.JPanel pnlHeader;
     private javax.swing.JPanel pnlSidebar;
     private javax.swing.JPanel pnlUpcomingTasks;
-    private javax.swing.JScrollPane spUpcomingTasks;
     private javax.swing.JTable tblTasks;
     // End of variables declaration//GEN-END:variables
 }

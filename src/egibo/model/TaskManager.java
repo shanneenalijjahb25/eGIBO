@@ -6,9 +6,28 @@ package egibo.model;
 
 import java.time.*;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
 
 public class TaskManager {
+    private static final Comparator<Task> RANK = new Comparator<Task>(){
+        @Override
+        public int compare(Task a, Task b) {
+        int byStatus = a.getStatus().compareTo(b.getStatus());
+        if (byStatus != 0) {
+            return byStatus;
+        }
+        
+        int byImportance = Integer.compare(b.getImportance(), a.getImportance());
+        if (byImportance != 0) {
+                return byImportance;
+        }
+        
+        return a.getDueDate().compareTo(b.getDueDate());
+        }
+    };
+    
     private final List<Task> tasks;
     
     public TaskManager(){
@@ -20,12 +39,54 @@ public class TaskManager {
         tasks.add(newFlexible);
     }
     public void addFixedTask(LocalTime startTime, LocalTime endTime, String title, double hours, int importance, LocalDate dueDate){
-        FixedTask newFixed = new FixedTask(startTime, endTime, title, hours, importance, dueDate);
+        FixedTask newFixed = new FixedTask(startTime, endTime, title, 0.0, importance, dueDate);
         tasks.add(newFixed);
     }
     
+    public void removeTask(Task t){
+        tasks.remove(t);
+    }
+    
+    public void markTaskDone(Task t){
+        if (tasks.contains(t)){
+            t.markDone();
+        }
+    }
+    
+    //daily reset
+    public void clear(){
+        tasks.clear();
+    }
+   
     public List<Task> getAllTasks() {
-        return tasks;
+        return new ArrayList<>(tasks);
+    }
+    
+        public List<Task> getPendingTasks() {
+        List<Task> result = new ArrayList<>();
+        for (Task t : tasks) {
+            if (t.getStatus() == Status.PENDING) {
+                result.add(t);
+            }
+        }
+        return result;
+    }
+
+    public List<Task> getFinishedTasks() {
+        List<Task> result = new ArrayList<>();
+        for (Task t : tasks) {
+            if (t.getStatus() == Status.DONE) {
+                result.add(t);
+            }
+        }
+        return result;
+    }
+    
+    public List<Task> getRankedTasks() {
+        
+        List<Task> sorted = new ArrayList<>(tasks);
+        Collections.sort(sorted, RANK);
+        return sorted;
     }
     
     public double getTotalRemainingHours() {

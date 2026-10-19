@@ -16,5 +16,15 @@ public class FlexibleTask extends Task{
     public boolean occupiesTime(LocalDateTime now){
     return false;
     }
+    
+    @Override
+    public String getTypeLabel(){
+        return "Flexible";
+    }
+    
+    @Override
+    public String getScheduleText(){
+        return "Anytime today";
+    }
      
 }
