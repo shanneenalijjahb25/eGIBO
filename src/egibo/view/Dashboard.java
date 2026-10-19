@@ -27,7 +27,7 @@ public class Dashboard extends javax.swing.JFrame {
         refreshDashboard(); // Populates tables, labels, and user name on load
     }
     
-    private void refreshDashboard() {
+    public void refreshDashboard() {
     // 1. Welcome Header & Date
     // (Replace lblWelcome and lblDate with your actual JLabel variable names from the designer)
     lblWelcome.setText("Welcome, " + studentProfile.name() + "!");
@@ -70,7 +70,7 @@ public class Dashboard extends javax.swing.JFrame {
         });
     }
 }
-    
+
     
     
     /**
@@ -387,7 +387,6 @@ public class Dashboard extends javax.swing.JFrame {
         lblCompletedTitle.setText("Capacity");
 
         lblCapacityMetric.setFont(new java.awt.Font("Segoe UI Historic", 1, 24)); // NOI18N
-        lblCapacityMetric.setText("0");
         lblCapacityMetric.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         lblCapacityMetric.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
@@ -397,12 +396,10 @@ public class Dashboard extends javax.swing.JFrame {
             pnlCompletedCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlCompletedCardLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lblCompletedTitle)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlCompletedCardLayout.createSequentialGroup()
-                .addContainerGap(63, Short.MAX_VALUE)
-                .addComponent(lblCapacityMetric, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(22, 22, 22))
+                .addGroup(pnlCompletedCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblCompletedTitle)
+                    .addComponent(lblCapacityMetric, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(14, Short.MAX_VALUE))
         );
         pnlCompletedCardLayout.setVerticalGroup(
             pnlCompletedCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -422,7 +419,6 @@ public class Dashboard extends javax.swing.JFrame {
         lblRiskTitle.setText("Workload Risk");
 
         lblWorkloadRisk.setFont(new java.awt.Font("Segoe UI Historic", 1, 24)); // NOI18N
-        lblWorkloadRisk.setText("      0");
         lblWorkloadRisk.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         lblWorkloadRisk.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
@@ -431,14 +427,12 @@ public class Dashboard extends javax.swing.JFrame {
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(lblRiskTitle))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(36, 36, 36)
-                        .addComponent(lblWorkloadRisk, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(24, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(lblRiskTitle)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(lblWorkloadRisk, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -469,12 +463,12 @@ public class Dashboard extends javax.swing.JFrame {
             pnlCompletedCard1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlCompletedCard1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lblCompletedTitle1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlCompletedCard1Layout.createSequentialGroup()
-                .addContainerGap(37, Short.MAX_VALUE)
-                .addComponent(lblCompletedCount, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(25, 25, 25))
+                .addGroup(pnlCompletedCard1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnlCompletedCard1Layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(lblCompletedCount, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(lblCompletedTitle1))
+                .addContainerGap(24, Short.MAX_VALUE))
         );
         pnlCompletedCard1Layout.setVerticalGroup(
             pnlCompletedCard1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -499,13 +493,13 @@ public class Dashboard extends javax.swing.JFrame {
                         .addComponent(pnlContent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(31, 31, 31)
                         .addComponent(pnlCompletedCard1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(pnlCompletedCard, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(pnlUpcomingTasks, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(18, Short.MAX_VALUE))
-            .addComponent(pnlHeader, javax.swing.GroupLayout.PREFERRED_SIZE, 938, Short.MAX_VALUE)
+            .addComponent(pnlHeader, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -529,22 +523,9 @@ public class Dashboard extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAddTaskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddTaskActionPerformed
-        String title = javax.swing.JOptionPane.showInputDialog(this, "Enter Task Title:");
-        if (title == null || title.trim().isEmpty()) return;
-
-        try {
-            double hours = Double.parseDouble(javax.swing.JOptionPane.showInputDialog(this, "Enter Estimated Hours:"));
-            int importance = Integer.parseInt(javax.swing.JOptionPane.showInputDialog(this, "Enter Importance (1 to 5):"));
-
-            // Add as Flexible Task by default, or check your task type inputs
-            taskManager.addFlexibleTask(title, hours, importance, java.time.LocalDate.now());
-
-            refreshDashboard(); // Refresh UI instantly
-        } catch (NumberFormatException e) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Please enter valid numeric values for hours and importance.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-        } catch (IllegalArgumentException e) {
-            javax.swing.JOptionPane.showMessageDialog(this, e.getMessage(), "Validation Error", javax.swing.JOptionPane.WARNING_MESSAGE);
-        }        // TODO add your handling code here:
+    // Open the custom AddTaskForm and pass the current Dashboard and TaskManager into it
+    AddTaskForm addTaskForm = new AddTaskForm(this, taskManager);
+    addTaskForm.setVisible(true);
     }//GEN-LAST:event_btnAddTaskActionPerformed
 
     private void lblEditCapacityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lblEditCapacityActionPerformed

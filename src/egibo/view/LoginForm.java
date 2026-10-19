@@ -6,6 +6,28 @@ public class LoginForm extends javax.swing.JFrame {
 
     public LoginForm() {
         initComponents();
+        setLocationRelativeTo(null);
+        
+    txtboxHours.setForeground(java.awt.Color.GRAY);
+    txtboxHours.setText("e.g., 2.5");
+
+    txtboxHours.addFocusListener(new java.awt.event.FocusAdapter() {
+        @Override
+        public void focusGained(java.awt.event.FocusEvent evt) {
+            if (txtboxHours.getText().equals("e.g., 2.5")) {
+                txtboxHours.setText("");
+                txtboxHours.setForeground(java.awt.Color.BLACK);
+            }
+        }
+
+        @Override
+        public void focusLost(java.awt.event.FocusEvent evt) {
+            if (txtboxHours.getText().isEmpty()) {
+                txtboxHours.setForeground(java.awt.Color.GRAY);
+                txtboxHours.setText("e.g., 2.5");
+            }
+        }
+});
     }
 
     /**
@@ -23,7 +45,7 @@ public class LoginForm extends javax.swing.JFrame {
         lblUsername = new javax.swing.JLabel();
         txtUsername = new javax.swing.JTextField();
         lblCapacity = new javax.swing.JLabel();
-        txtCapacity = new javax.swing.JTextField();
+        txtboxHours = new javax.swing.JTextField();
         btnLogin = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -76,9 +98,7 @@ public class LoginForm extends javax.swing.JFrame {
         lblCapacity.setFont(new java.awt.Font("Franklin Gothic Medium", 0, 12)); // NOI18N
         lblCapacity.setText("Today's Work Capacity (hr):");
 
-        txtCapacity.setFont(new java.awt.Font("Calisto MT", 0, 12)); // NOI18N
-        txtCapacity.setForeground(new java.awt.Color(204, 204, 204));
-        txtCapacity.setText("e.g. 3.0");
+        txtboxHours.setFont(new java.awt.Font("Calisto MT", 0, 12)); // NOI18N
 
         btnLogin.setText("Enter Dashboard (→_→)");
         btnLogin.addActionListener(this::btnLoginActionPerformed);
@@ -102,7 +122,7 @@ public class LoginForm extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(lblCapacity)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtCapacity))
+                                .addComponent(txtboxHours))
                             .addComponent(txtUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(titlePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 42, Short.MAX_VALUE))))
@@ -119,7 +139,7 @@ public class LoginForm extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblCapacity)
-                    .addComponent(txtCapacity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtboxHours, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(29, 29, 29)
                 .addComponent(btnLogin)
                 .addContainerGap(39, Short.MAX_VALUE))
@@ -133,7 +153,7 @@ public class LoginForm extends javax.swing.JFrame {
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
             try {
                 String username = txtUsername.getText().trim();
-                String capacityText = txtCapacity.getText().trim();
+                String capacityText = txtboxHours.getText().trim();
         
             // 1. Validate Username
             if (username.isEmpty()) {
@@ -223,7 +243,7 @@ public class LoginForm extends javax.swing.JFrame {
     private javax.swing.JLabel lblCapacity;
     private javax.swing.JLabel lblUsername;
     private javax.swing.JPanel titlePanel;
-    private javax.swing.JTextField txtCapacity;
     private javax.swing.JTextField txtUsername;
+    private javax.swing.JTextField txtboxHours;
     // End of variables declaration//GEN-END:variables
 }

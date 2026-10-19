@@ -45,7 +45,7 @@
                           <Group type="102" alignment="1" attributes="0">
                               <Component id="lblCapacity" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="txtCapacity" max="32767" attributes="0"/>
+                              <Component id="txtboxHours" max="32767" attributes="0"/>
                           </Group>
                           <Component id="txtUsername" alignment="1" min="-2" pref="258" max="-2" attributes="0"/>
                           <Component id="titlePanel" min="-2" max="-2" attributes="0"/>
@@ -69,7 +69,7 @@
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="lblCapacity" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="txtCapacity" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="txtboxHours" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
               <Component id="btnLogin" min="-2" max="-2" attributes="0"/>
@@ -173,15 +173,11 @@
         <Property name="text" type="java.lang.String" value="Today&apos;s Work Capacity (hr):"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="txtCapacity">
+    <Component class="javax.swing.JTextField" name="txtboxHours">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Calisto MT" size="12" style="0"/>
         </Property>
-        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="cc" green="cc" red="cc" type="rgb"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="e.g. 3.0"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="btnLogin">
