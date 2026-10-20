@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Collections;
 import java.util.List;
+import jdk.jfr.Description;
 
 public class TaskManager {
     private static final Comparator<Task> RANK = new Comparator<Task>(){
@@ -34,12 +35,12 @@ public class TaskManager {
         this.tasks = new ArrayList<>();
     }
     
-    public void addFlexibleTask(String title, double hours, int importance, LocalDate dueDate) {
-        FlexibleTask newFlexible = new FlexibleTask(title, hours, importance, dueDate);
+    public void addFlexibleTask(String title, String description, double hours, int importance, LocalDate dueDate) {
+        FlexibleTask newFlexible = new FlexibleTask(title, description, hours, importance, dueDate);
         tasks.add(newFlexible);
     }
-    public void addFixedTask(LocalTime startTime, LocalTime endTime, String title, double hours, int importance, LocalDate dueDate){
-        FixedTask newFixed = new FixedTask(startTime, endTime, title, 0.0, importance, dueDate);
+    public void addFixedTask(LocalTime startTime, LocalTime endTime, String title, String description,  double hours, int importance, LocalDate dueDate){
+        FixedTask newFixed = new FixedTask(startTime, endTime, title, description, 0.0, importance, dueDate);
         tasks.add(newFixed);
     }
     

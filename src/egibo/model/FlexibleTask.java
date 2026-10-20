@@ -5,11 +5,12 @@
 package egibo.model;
 
 import java.time.*;
+import jdk.jfr.Description;
 
 public class FlexibleTask extends Task{
 
-    public FlexibleTask(String title, double hours, int importance, LocalDate dueDate) {
-        super(title, hours, importance, dueDate);
+    public FlexibleTask(String title, String description, double hours, int importance, LocalDate dueDate) {
+        super(title, description, hours, importance, dueDate);
     }
     
     @Override

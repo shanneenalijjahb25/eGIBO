@@ -12,8 +12,8 @@ public class FixedTask extends Task{
     private final LocalTime startTime;
     private final LocalTime endTime;
 
-    public FixedTask(LocalTime startTime, LocalTime endTime, String title, double hours, int importance, LocalDate eventDate) {
-        super(title, computeHours(startTime, endTime), importance, eventDate);
+    public FixedTask(LocalTime startTime, LocalTime endTime, String title, String description, double hours, int importance, LocalDate eventDate) {
+        super(title, description, computeHours(startTime, endTime), importance, eventDate);
         this.startTime = startTime;
         this.endTime = endTime;
     }

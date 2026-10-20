@@ -90,7 +90,7 @@ public class LoginForm extends javax.swing.JFrame {
         );
 
         lblUsername.setFont(new java.awt.Font("Franklin Gothic Medium", 0, 12)); // NOI18N
-        lblUsername.setText("Username:");
+        lblUsername.setText("Name:");
         lblUsername.setName("txtName"); // NOI18N
 
         txtUsername.setFont(new java.awt.Font("Calisto MT", 0, 12)); // NOI18N
@@ -136,13 +136,13 @@ public class LoginForm extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblUsername))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblCapacity)
                     .addComponent(txtboxHours, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(29, 29, 29)
+                .addGap(18, 18, 18)
                 .addComponent(btnLogin)
-                .addContainerGap(39, Short.MAX_VALUE))
+                .addContainerGap(41, Short.MAX_VALUE))
         );
 
         lblUsername.getAccessibleContext().setAccessibleName("txtName");

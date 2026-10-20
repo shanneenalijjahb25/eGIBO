@@ -3,36 +3,240 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package egibo.view;
+import egibo.model.Status;
+import egibo.model.Task;
+import egibo.model.TaskManager;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.RowFilter;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
 public class MyTasks extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(MyTasks.class.getName());
+    
+    private Dashboard parentDashboard;
+    private TaskManager taskManager;
+    private DefaultTableModel tableModel;
+    private TableRowSorter<DefaultTableModel> rowSorter;
+    
+     public MyTasks() {
+        this(null, new TaskManager());
+    }
 
-    public MyTasks() {
+    // Main constructor linked with Dashboard and TaskManager
+    public MyTasks(Dashboard parent, TaskManager taskManager) {
         initComponents();
         setTitle("eGIBO - My Tasks");
         setSize(1200, 700);
         setMinimumSize(new java.awt.Dimension(1000, 600));
         setLocationRelativeTo(null);
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        String[] columns = {"Task Title", "Due Date", "Hours", "Priority", "Status"};
+        this.parentDashboard = parent;
+        this.taskManager = taskManager;
 
-        javax.swing.table.DefaultTableModel tableModel =
-        new javax.swing.table.DefaultTableModel(columns, 0) {
-
-        @Override
-
-        public boolean isCellEditable(int row, int column) {
-            return false;
+        // 1. Setup Table Columns (Including Description)
+        String[] columns = {"Task Title", "Due Date", "Hours", "Priority", "Status", "Description"};
+        tableModel = new DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Non-editable table cells
             }
         };
+        
         tblTasks.setModel(tableModel);
         tblTasks.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tblTasks.setRowHeight(28);
-        tblTasks.setAutoCreateRowSorter(true);
         tblTasks.setFillsViewportHeight(true);
-    }
 
+        // Setup row sorter for filtering
+        rowSorter = new TableRowSorter<>(tableModel);
+        tblTasks.setRowSorter(rowSorter);
+
+        // 2. Load data & wire listeners
+        refreshTableData();
+        setupCustomListeners();
+        
+        addWindowListener(new java.awt.event.WindowAdapter() {
+        @Override
+        public void windowOpened(java.awt.event.WindowEvent evt) {
+            refreshTableData();
+        }
+        });
+    }
+    
+    private void refreshTableData() {
+        tableModel.setRowCount(0); // Clear old rows
+        List<Task> tasks = taskManager.getAllTasks();
+
+        for (Task t : tasks) {
+            Object[] rowData = {
+                t.getTitle(),
+                t.getDueDate(),
+                t.getHours(),
+                t.getImportance(),
+                t.getStatus(),
+                t.getDescription()
+            };
+            tableModel.addRow(rowData);
+        }
+
+        updateTaskCountLabel();
+    }
+    
+    private void updateTaskCountLabel() {
+        int count = tblTasks.getRowCount();
+        lblTaskCount.setText("Showing " + count + " tasks");
+    }
+    
+        private void setupCustomListeners() {
+        // --- Sidebar Navigation ---
+        buttonDashboard.addActionListener(e -> {
+            if (parentDashboard != null) {
+                parentDashboard.setVisible(true);
+                parentDashboard.refreshDashboard();
+            }
+            this.dispose();
+        });
+
+        btnMyTasks.addActionListener(e -> {
+            // Already here, refresh data
+            refreshTableData();
+        });
+
+        // --- Add Task ---
+        btnAddTask.addActionListener(e -> {
+            AddTaskForm form = new AddTaskForm(parentDashboard, taskManager);
+            form.setVisible(true);
+        });
+
+        // --- Search Box Placeholder & Key Listener ---
+        txtSearch.setForeground(java.awt.Color.GRAY);
+        txtSearch.setText("Search tasks...");
+        txtSearch.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                if (txtSearch.getText().equals("Search tasks...")) {
+                    txtSearch.setText("");
+                    txtSearch.setForeground(java.awt.Color.BLACK);
+                }
+            }
+            @Override
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                if (txtSearch.getText().isEmpty()) {
+                    txtSearch.setForeground(java.awt.Color.GRAY);
+                    txtSearch.setText("Search tasks...");
+                }
+            }
+        });
+
+        txtSearch.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                applyFilters();
+            }
+        });
+
+        // --- Dropdown Filters ---
+        cmbStatus.addActionListener(e -> applyFilters());
+        cmbPriority.addActionListener(e -> applyFilters());
+
+        // --- Mark Done Action ---
+        btnMarkDone.addActionListener(e -> {
+        int selectedRow = tblTasks.getSelectedRow();
+    if (selectedRow != -1) {
+        int modelRow = tblTasks.convertRowIndexToModel(selectedRow);
+        
+        // 1. Retrieve the selected Task from taskManager
+        egibo.model.Task task = taskManager.getAllTasks().get(modelRow);
+        
+        // 2. Update status directly on the Task instance
+        // (Use whichever method name your Task class uses, e.g., setStatus or markCompleted)
+        task.setStatus(Status.DONE); 
+        
+        // 3. Refresh both views so changes reflect everywhere immediately
+        refreshTableData();
+        if (parentDashboard != null) {
+            parentDashboard.refreshDashboard();
+        }
+    } else {
+        javax.swing.JOptionPane.showMessageDialog(
+            this, 
+            "Please select a task from the table first.", 
+            "Selection Required", 
+            javax.swing.JOptionPane.WARNING_MESSAGE
+        );
+    }
+    });
+
+        // --- Delete Task Action ---
+        btnDeleteTask.addActionListener(e -> {
+          int selectedRow = tblTasks.getSelectedRow();
+          if (selectedRow != -1) {
+              int modelRow = tblTasks.convertRowIndexToModel(selectedRow);
+              int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this task?", "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+              if (confirm == JOptionPane.YES_OPTION) {
+                  // Fetch the actual Task object from taskManager using index
+                  Task taskToRemove = taskManager.getAllTasks().get(modelRow);
+                  taskManager.removeTask(taskToRemove); // Pass the Task object instead of modelRow
+
+                  refreshTableData();
+                  if (parentDashboard != null) parentDashboard.refreshDashboard();
+              }
+          } else {
+              JOptionPane.showMessageDialog(this, "Please select a task to delete.", "Selection Required", JOptionPane.WARNING_MESSAGE);
+          }
+      });
+
+        // --- Edit Task Action ---
+        btnEditTask.addActionListener(e -> {
+            int selectedRow = tblTasks.getSelectedRow();
+            if (selectedRow != -1) {
+                int modelRow = tblTasks.convertRowIndexToModel(selectedRow);
+                // Hook up your Edit Task form or logic here using taskManager.getTasks().get(modelRow)
+                JOptionPane.showMessageDialog(this, "Edit feature for row " + (modelRow + 1) + " selected.", "Edit Task", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Please select a task to edit.", "Selection Required", JOptionPane.WARNING_MESSAGE);
+            }
+        });
+    }
+        
+        private void applyFilters() {
+        String searchText = txtSearch.getText().trim();
+        if (searchText.equals("Search tasks...")) {
+            searchText = "";
+        }
+
+        String statusFilter = cmbStatus.getSelectedItem().toString();
+        String priorityFilter = cmbPriority.getSelectedItem().toString();
+
+        java.util.List<RowFilter<DefaultTableModel, Object>> filters = new java.util.ArrayList<>();
+
+        // 1. Search filter (matches Title or Description)
+        if (!searchText.isEmpty()) {
+            filters.add(RowFilter.regexFilter("(?i)" + searchText, 0, 5)); // Column 0 (Title) and 5 (Description)
+        }
+
+        // 2. Status filter
+        if (!statusFilter.equals("All Statuses")) {
+            filters.add(RowFilter.regexFilter("^" + statusFilter + "$", 4)); // Column 4 (Status)
+        }
+
+        // 3. Priority filter
+        if (!priorityFilter.equals("All Priorities")) {
+            // Priority numbers are 1-5 or strings. Match exact priority prefix digits if needed.
+            filters.add(RowFilter.regexFilter("^" + priorityFilter.charAt(0), 3)); // Column 3 (Priority)
+        }
+
+        if (filters.isEmpty()) {
+            rowSorter.setRowFilter(null);
+        } else {
+            rowSorter.setRowFilter(RowFilter.andFilter(filters));
+        }
+
+        updateTaskCountLabel();
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -178,6 +382,7 @@ public class MyTasks extends javax.swing.JFrame {
         buttonDashboard.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         buttonDashboard.setText("Dashboard");
         buttonDashboard.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 102, 102), 2, true));
+        buttonDashboard.addActionListener(this::buttonDashboardActionPerformed);
 
         btnAboutUs.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnAboutUs.setText("About Us");
@@ -261,6 +466,14 @@ public class MyTasks extends javax.swing.JFrame {
     private void btnMarkDoneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMarkDoneActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnMarkDoneActionPerformed
+
+    private void buttonDashboardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDashboardActionPerformed
+    if (parentDashboard != null) {
+            parentDashboard.setVisible(true);
+            parentDashboard.refreshDashboard(); // Forces the dashboard to reload tasks instantly!
+        }
+    this.dispose();
+    }//GEN-LAST:event_buttonDashboardActionPerformed
 
     /**
      * @param args the command line arguments

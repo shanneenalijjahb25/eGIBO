@@ -12,9 +12,10 @@ public abstract class Task {
     private double hours;
     private int importance;
     private LocalDate dueDate;
-    private Status status;
+    protected Status status = Status.PENDING;
+    private String description;
     
-    Task (String title, double hours, int importance, LocalDate dueDate){
+    Task (String title, String description, double hours, int importance, LocalDate dueDate){
          if (Double.isNaN(hours) || hours <= 0) {
         throw new IllegalArgumentException("Hours must be greater than 0.");
         }  
@@ -24,6 +25,8 @@ public abstract class Task {
         else {
             this.title = title.trim();
         }
+        
+        this.description = description;
         
         if (hours > StudentProfile.MAX_CAPACITY){
             throw new IllegalArgumentException("A single task cannot be more than " + (int) StudentProfile.MAX_CAPACITY + "hours.");
@@ -76,6 +79,12 @@ public abstract class Task {
         return importance; }
     public Status getStatus() { 
         return status; }
+    public void setStatus(Status status) {
+            this.status = status;
+    }
+    public String getDescription() {
+    return description;
+}
     
     public abstract boolean occupiesTime(LocalDateTime now);
     public abstract String getTypeLabel();

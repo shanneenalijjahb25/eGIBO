@@ -393,17 +393,19 @@ public class AddTaskForm extends javax.swing.JFrame {
             LocalTime endTime = LocalTime.parse(txtboxEndTime.getText().trim());     // Format like "10:00"
             
             // Note: FixedTask automatically computes hours internally via duration between start and end!
-            taskManager.addFixedTask(startTime, endTime, title, 0.0, importance, today);
+            taskManager.addFixedTask(startTime, endTime, title, description, 0.0, importance, today);
 
         } else {
             // Flexible Task requires: String title, double hours, int importance, LocalDate dueDate
             double hours = Double.parseDouble(txtboxHours.getText().trim());
             
-            taskManager.addFlexibleTask(title, hours, importance, today);
+            taskManager.addFlexibleTask(title,description, hours, importance, today);
         }
 
         // Refresh main dashboard table/counters and close form
-        parentDashboard.refreshDashboard();
+        if (parentDashboard != null) {
+            parentDashboard.refreshDashboard(); // Make sure Dashboard has a public refreshDashboard() method
+        }
         this.dispose();
 
     } catch (java.time.format.DateTimeParseException e) {

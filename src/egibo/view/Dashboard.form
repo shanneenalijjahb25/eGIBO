@@ -41,7 +41,7 @@
               </Group>
               <EmptySpace pref="18" max="32767" attributes="0"/>
           </Group>
-          <Component id="pnlHeader" alignment="0" pref="0" max="32767" attributes="0"/>
+          <Component id="pnlHeader" alignment="0" pref="938" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -529,6 +529,9 @@
               </Border>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnMyTasksActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnClose">
           <Properties>
@@ -629,11 +632,14 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace min="6" pref="6" max="-2" attributes="0"/>
+                          <Component id="lblCapacityMetric" min="-2" pref="143" max="-2" attributes="0"/>
+                      </Group>
                       <Component id="lblCompletedTitle" min="-2" max="-2" attributes="0"/>
-                      <Component id="lblCapacityMetric" alignment="0" min="-2" pref="149" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace pref="14" max="32767" attributes="0"/>
               </Group>

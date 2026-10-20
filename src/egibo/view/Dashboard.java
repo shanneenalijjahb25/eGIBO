@@ -3,26 +3,32 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package egibo.view;
+import egibo.model.TaskManager;
+import egibo.view.MyTasks;
 
 /**
  *
- * @author Jon Reynol Burce
+ * @design Jon Reynol Burce
  * @author Shanneen Alijjah Boarao
  */
 public class Dashboard extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Dashboard.class.getName());
-
+    private TaskManager taskManager;
     /**
      * Creates new form Dashboard
      */
     private final egibo.model.StudentProfile studentProfile;
-    private final egibo.model.TaskManager taskManager;
 
     public Dashboard(egibo.model.StudentProfile studentProfile, egibo.model.TaskManager taskManager) {
         this.studentProfile = studentProfile;
         this.taskManager = taskManager;
         initComponents();
+        btnMyTasks.addActionListener(e -> {
+            MyTasks myTasksWindow = new MyTasks(this, taskManager);
+            myTasksWindow.setVisible(true);
+            this.dispose();
+        });
         setLocationRelativeTo(null);
         refreshDashboard(); // Populates tables, labels, and user name on load
     }
@@ -309,6 +315,7 @@ public class Dashboard extends javax.swing.JFrame {
         btnMyTasks.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         btnMyTasks.setText("My Tasks");
         btnMyTasks.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 102, 102), 2, true));
+        btnMyTasks.addActionListener(this::btnMyTasksActionPerformed);
 
         btnClose.setForeground(new java.awt.Color(0, 102, 102));
         btnClose.setText("Close ");
@@ -397,8 +404,10 @@ public class Dashboard extends javax.swing.JFrame {
             .addGroup(pnlCompletedCardLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pnlCompletedCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblCompletedTitle)
-                    .addComponent(lblCapacityMetric, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(pnlCompletedCardLayout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(lblCapacityMetric, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(lblCompletedTitle))
                 .addContainerGap(14, Short.MAX_VALUE))
         );
         pnlCompletedCardLayout.setVerticalGroup(
@@ -499,7 +508,7 @@ public class Dashboard extends javax.swing.JFrame {
                         .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(pnlUpcomingTasks, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(18, Short.MAX_VALUE))
-            .addComponent(pnlHeader, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+            .addComponent(pnlHeader, javax.swing.GroupLayout.PREFERRED_SIZE, 938, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -567,6 +576,10 @@ public class Dashboard extends javax.swing.JFrame {
     } // Closes just this current window safely
     }//GEN-LAST:event_btnCloseActionPerformed
 
+    private void btnMyTasksActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMyTasksActionPerformed
+        
+    }//GEN-LAST:event_btnMyTasksActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -595,6 +608,12 @@ public class Dashboard extends javax.swing.JFrame {
         new Dashboard(testProfile, testManager).setVisible(true);
         });
     }
+    
+    private void btnMyTasksNavActionPerformed(java.awt.event.ActionEvent evt) {                                            
+        MyTasks myTasksWindow = new MyTasks(this, this.taskManager);
+        myTasksWindow.setVisible(true);
+        this.dispose();
+}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAddTask;
