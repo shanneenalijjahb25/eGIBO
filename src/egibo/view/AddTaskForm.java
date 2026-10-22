@@ -157,9 +157,13 @@ public class AddTaskForm extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setFont(new java.awt.Font("Times New Roman", 3, 36)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Segoe UI Emoji", 1, 36)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(0, 102, 102));
-        jLabel1.setText("------ Add Task ------");
+        jLabel1.setText("💫˚  : Add Task");
+        jLabel1.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
+        jLabel1.setAlignmentY(0.0F);
+        jLabel1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jLabel1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
         lblTitle.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
         lblTitle.setText("Title: ");
@@ -172,13 +176,13 @@ public class AddTaskForm extends javax.swing.JFrame {
         txtboxTitle.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
 
         btngroupTaskType.add(rbFixedTask);
-        rbFixedTask.setFont(new java.awt.Font("Segoe UI Historic", 1, 12)); // NOI18N
+        rbFixedTask.setFont(new java.awt.Font("SimSun-ExtG", 1, 12)); // NOI18N
         rbFixedTask.setForeground(new java.awt.Color(0, 102, 102));
         rbFixedTask.setText("Class Schedule / Event");
         rbFixedTask.addActionListener(this::rbFixedTaskActionPerformed);
 
         btngroupTaskType.add(rbFlexibleTask);
-        rbFlexibleTask.setFont(new java.awt.Font("Segoe UI Historic", 1, 12)); // NOI18N
+        rbFlexibleTask.setFont(new java.awt.Font("SimSun-ExtG", 1, 12)); // NOI18N
         rbFlexibleTask.setForeground(new java.awt.Color(0, 102, 102));
         rbFlexibleTask.setText("Assignments / Projects");
         rbFlexibleTask.addActionListener(this::rbFlexibleTaskActionPerformed);
@@ -186,6 +190,8 @@ public class AddTaskForm extends javax.swing.JFrame {
         pnlDynamicContainer.setBackground(new java.awt.Color(162, 192, 192));
         pnlDynamicContainer.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
         pnlDynamicContainer.setLayout(new java.awt.CardLayout());
+
+        pnlFixedTask.setBackground(new java.awt.Color(255, 255, 255));
 
         lblStartTime.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
         lblStartTime.setForeground(new java.awt.Color(0, 153, 153));
@@ -195,8 +201,10 @@ public class AddTaskForm extends javax.swing.JFrame {
         lblEndTime.setForeground(new java.awt.Color(0, 153, 153));
         lblEndTime.setText("End Time: ");
 
+        txtboxStartTime.setBackground(new java.awt.Color(213, 234, 235));
         txtboxStartTime.setToolTipText("");
 
+        txtboxEndTime.setBackground(new java.awt.Color(213, 234, 235));
         txtboxEndTime.setToolTipText("");
 
         javax.swing.GroupLayout pnlFixedTaskLayout = new javax.swing.GroupLayout(pnlFixedTask);
@@ -232,9 +240,13 @@ public class AddTaskForm extends javax.swing.JFrame {
 
         pnlDynamicContainer.add(pnlFixedTask, "card2");
 
+        pnlFlexibleTask.setBackground(new java.awt.Color(255, 255, 255));
+
         txtHours.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
         txtHours.setForeground(new java.awt.Color(0, 153, 153));
         txtHours.setText("Estimated Working Hours:");
+
+        txtboxHours.setBackground(new java.awt.Color(213, 234, 235));
 
         javax.swing.GroupLayout pnlFlexibleTaskLayout = new javax.swing.GroupLayout(pnlFlexibleTask);
         pnlFlexibleTask.setLayout(pnlFlexibleTaskLayout);
@@ -313,18 +325,17 @@ public class AddTaskForm extends javax.swing.JFrame {
                                     .addComponent(txtDate))
                                 .addGap(13, 13, 13)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtboxTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtboxDescription, javax.swing.GroupLayout.PREFERRED_SIZE, 276, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 329, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(1, 1, 1)))))
+                                    .addComponent(txtboxDescription, javax.swing.GroupLayout.PREFERRED_SIZE, 276, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(jLabel1)
+                                        .addComponent(txtboxTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
                 .addContainerGap(36, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(28, 28, 28)
-                .addComponent(jLabel1)
+                .addGap(27, 27, 27)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -353,7 +364,7 @@ public class AddTaskForm extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSave)
                     .addComponent(btnCancel))
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addContainerGap(17, Short.MAX_VALUE))
         );
 
         pack();

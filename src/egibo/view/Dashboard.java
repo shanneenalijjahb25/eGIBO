@@ -50,7 +50,7 @@ public class Dashboard extends javax.swing.JFrame {
     lblCompletedCount.setText(String.valueOf(completedCount));
     lblCapacityMetric.setText(totalHours + " / " + capacity + " hrs");
     
-    // Workload Risk Evaluation
+    // Workload Riskevaluation
     String risk = "Low";
     if (totalHours > capacity) {
         risk = "Overloaded! ⚠️";
@@ -93,11 +93,11 @@ public class Dashboard extends javax.swing.JFrame {
         lblHoursTitle = new javax.swing.JLabel();
         lblWorkloadHours = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
-        lblTitle = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         lblWelcome = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         lblDate = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
         pnlUpcomingTasks = new javax.swing.JPanel();
         lblUpcomingTitle = new javax.swing.JLabel();
         btnAddTask = new javax.swing.JButton();
@@ -159,23 +159,25 @@ public class Dashboard extends javax.swing.JFrame {
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
         jPanel3.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, null, new java.awt.Color(255, 255, 255), new java.awt.Color(204, 204, 204), null));
 
-        lblTitle.setFont(new java.awt.Font("Footlight MT Light", 1, 48)); // NOI18N
-        lblTitle.setForeground(new java.awt.Color(255, 255, 255));
-        lblTitle.setIcon(new javax.swing.ImageIcon(getClass().getResource("/egibo/model/image/Screenshot 2026-10-20 113252.png"))); // NOI18N
-
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 60)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(136, 196, 196));
         jLabel1.setText("|");
         jLabel1.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
 
-        lblWelcome.setFont(new java.awt.Font("Times New Roman", 2, 36)); // NOI18N
+        lblWelcome.setFont(new java.awt.Font("Serif", 2, 36)); // NOI18N
         lblWelcome.setText("Welcome ");
+        lblWelcome.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
         lblWelcome.setName("lblWelcome"); // NOI18N
 
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/egibo/model/image/Screenshot 2026-10-20 114626.png"))); // NOI18N
 
         lblDate.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
+        lblDate.setForeground(new java.awt.Color(0, 102, 102));
         lblDate.setText("Date: ");
+        lblDate.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        lblDate.setVerifyInputWhenFocusTarget(false);
+
+        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/egibo/view/Screenshot 2026-10-22 210418.png"))); // NOI18N
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -184,15 +186,16 @@ public class Dashboard extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(462, 462, 462)
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 293, Short.MAX_VALUE))
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addComponent(lblTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(0, 308, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addGap(17, 17, 17)
+                .addComponent(jLabel4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(12, 12, 12)
                 .addComponent(lblWelcome, javax.swing.GroupLayout.PREFERRED_SIZE, 370, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(lblDate, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblDate, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -201,9 +204,9 @@ public class Dashboard extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(lblWelcome, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(lblTitle, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblDate, javax.swing.GroupLayout.Alignment.TRAILING))
+                    .addComponent(lblDate, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
         );
@@ -215,7 +218,7 @@ public class Dashboard extends javax.swing.JFrame {
             .addGroup(pnlHeaderLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(608, 608, 608)
+                .addGap(699, 699, 699)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -226,19 +229,20 @@ public class Dashboard extends javax.swing.JFrame {
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(pnlHeaderLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pnlUpcomingTasks.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         pnlUpcomingTasks.setForeground(new java.awt.Color(255, 255, 255));
 
         lblUpcomingTitle.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lblUpcomingTitle.setText("==========================+TODAY'S TASK +=======================");
+        lblUpcomingTitle.setForeground(new java.awt.Color(0, 102, 102));
+        lblUpcomingTitle.setText("==========================+   TODAY'S TASK   +=======================");
 
         btnAddTask.setFont(new java.awt.Font("Segoe UI Historic", 1, 18)); // NOI18N
         btnAddTask.setForeground(new java.awt.Color(0, 102, 102));
         btnAddTask.setText("+ Add Task");
-        btnAddTask.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 153, 153), 2));
+        btnAddTask.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btnAddTask.addActionListener(this::btnAddTaskActionPerformed);
 
         tblTasks.setModel(new javax.swing.table.DefaultTableModel(
@@ -255,15 +259,15 @@ public class Dashboard extends javax.swing.JFrame {
         jScrollPane1.setViewportView(tblTasks);
 
         lblEditCapacity.setFont(new java.awt.Font("Segoe UI Historic", 1, 14)); // NOI18N
-        lblEditCapacity.setForeground(new java.awt.Color(0, 153, 153));
-        lblEditCapacity.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 153, 153)));
+        lblEditCapacity.setForeground(new java.awt.Color(76, 139, 139));
+        lblEditCapacity.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         lblEditCapacity.setLabel("Edit Capacity");
         lblEditCapacity.addActionListener(this::lblEditCapacityActionPerformed);
 
         lblResetDay.setFont(new java.awt.Font("Segoe UI Historic", 1, 14)); // NOI18N
-        lblResetDay.setForeground(new java.awt.Color(0, 153, 153));
+        lblResetDay.setForeground(new java.awt.Color(76, 139, 139));
         lblResetDay.setText("Reset Day");
-        lblResetDay.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 153, 153)));
+        lblResetDay.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         lblResetDay.addActionListener(this::lblResetDayActionPerformed);
 
         javax.swing.GroupLayout pnlUpcomingTasksLayout = new javax.swing.GroupLayout(pnlUpcomingTasks);
@@ -273,34 +277,33 @@ public class Dashboard extends javax.swing.JFrame {
             .addGroup(pnlUpcomingTasksLayout.createSequentialGroup()
                 .addGroup(pnlUpcomingTasksLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnlUpcomingTasksLayout.createSequentialGroup()
+                        .addGap(52, 52, 52)
+                        .addComponent(lblUpcomingTitle))
+                    .addGroup(pnlUpcomingTasksLayout.createSequentialGroup()
                         .addGap(23, 23, 23)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 696, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(pnlUpcomingTasksLayout.createSequentialGroup()
-                        .addGap(94, 94, 94)
-                        .addComponent(btnAddTask, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(30, 30, 30)
-                        .addComponent(lblEditCapacity, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(27, 27, 27)
-                        .addComponent(lblResetDay, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(pnlUpcomingTasksLayout.createSequentialGroup()
-                        .addGap(63, 63, 63)
-                        .addComponent(lblUpcomingTitle)))
-                .addContainerGap(22, Short.MAX_VALUE))
+                        .addGroup(pnlUpcomingTasksLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(pnlUpcomingTasksLayout.createSequentialGroup()
+                                .addComponent(btnAddTask, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(lblEditCapacity, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(lblResetDay, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 696, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pnlUpcomingTasksLayout.setVerticalGroup(
             pnlUpcomingTasksLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlUpcomingTasksLayout.createSequentialGroup()
-                .addGap(21, 21, 21)
+                .addGap(27, 27, 27)
                 .addComponent(lblUpcomingTitle)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 271, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
-                .addGroup(pnlUpcomingTasksLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnAddTask, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(pnlUpcomingTasksLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lblResetDay, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(lblEditCapacity, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(35, 35, 35))
+                .addGroup(pnlUpcomingTasksLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblResetDay, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblEditCapacity, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnAddTask, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(32, Short.MAX_VALUE))
         );
 
         lblEditCapacity.getAccessibleContext().setAccessibleName("btnEditCapacity");
@@ -349,7 +352,7 @@ public class Dashboard extends javax.swing.JFrame {
                 .addGap(27, 27, 27)
                 .addComponent(btnDashboard, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnMyTasks, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnMyTasks, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -365,8 +368,9 @@ public class Dashboard extends javax.swing.JFrame {
         lblCompletedTitle2.setForeground(new java.awt.Color(0, 102, 102));
         lblCompletedTitle2.setText("Pending Tasks");
 
-        lblPendingCount.setFont(new java.awt.Font("Segoe UI Historic", 1, 24)); // NOI18N
-        lblPendingCount.setText("      0");
+        lblPendingCount.setFont(new java.awt.Font("SimSun-ExtG", 1, 24)); // NOI18N
+        lblPendingCount.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblPendingCount.setText("0");
         lblPendingCount.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         lblPendingCount.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
@@ -378,8 +382,8 @@ public class Dashboard extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(pnlContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblCompletedTitle2, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblPendingCount, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(17, 17, 17))
+                    .addComponent(lblPendingCount, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(16, 16, 16))
         );
         pnlContentLayout.setVerticalGroup(
             pnlContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -398,7 +402,9 @@ public class Dashboard extends javax.swing.JFrame {
         lblCompletedTitle.setForeground(new java.awt.Color(0, 102, 102));
         lblCompletedTitle.setText("Capacity");
 
-        lblCapacityMetric.setFont(new java.awt.Font("Segoe UI Historic", 1, 24)); // NOI18N
+        lblCapacityMetric.setFont(new java.awt.Font("SimSun-ExtB", 1, 24)); // NOI18N
+        lblCapacityMetric.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblCapacityMetric.setText("0.0/0.0 hrs");
         lblCapacityMetric.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         lblCapacityMetric.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
@@ -409,11 +415,9 @@ public class Dashboard extends javax.swing.JFrame {
             .addGroup(pnlCompletedCardLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pnlCompletedCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pnlCompletedCardLayout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(lblCapacityMetric, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(lblCompletedTitle))
-                .addContainerGap(79, Short.MAX_VALUE))
+                    .addComponent(lblCompletedTitle)
+                    .addComponent(lblCapacityMetric, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(31, Short.MAX_VALUE))
         );
         pnlCompletedCardLayout.setVerticalGroup(
             pnlCompletedCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -422,7 +426,7 @@ public class Dashboard extends javax.swing.JFrame {
                 .addComponent(lblCompletedTitle)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblCapacityMetric, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(30, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel2.setBackground(new java.awt.Color(196, 225, 225));
@@ -432,7 +436,9 @@ public class Dashboard extends javax.swing.JFrame {
         lblRiskTitle.setForeground(new java.awt.Color(0, 102, 102));
         lblRiskTitle.setText("Workload Risk");
 
-        lblWorkloadRisk.setFont(new java.awt.Font("Segoe UI Historic", 1, 24)); // NOI18N
+        lblWorkloadRisk.setFont(new java.awt.Font("SimSun-ExtB", 1, 24)); // NOI18N
+        lblWorkloadRisk.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblWorkloadRisk.setText("Low");
         lblWorkloadRisk.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         lblWorkloadRisk.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
@@ -442,11 +448,10 @@ public class Dashboard extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lblRiskTitle)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(lblWorkloadRisk, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblRiskTitle)
+                    .addComponent(lblWorkloadRisk, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(38, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -455,7 +460,7 @@ public class Dashboard extends javax.swing.JFrame {
                 .addComponent(lblRiskTitle)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblWorkloadRisk, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(30, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pnlCompletedCard1.setBackground(new java.awt.Color(196, 225, 225));
@@ -466,8 +471,9 @@ public class Dashboard extends javax.swing.JFrame {
         lblCompletedTitle1.setForeground(new java.awt.Color(0, 102, 102));
         lblCompletedTitle1.setText("Completed Tasks");
 
-        lblCompletedCount.setFont(new java.awt.Font("Segoe UI Historic", 1, 24)); // NOI18N
-        lblCompletedCount.setText("      0");
+        lblCompletedCount.setFont(new java.awt.Font("SimSun-ExtB", 1, 24)); // NOI18N
+        lblCompletedCount.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblCompletedCount.setText("0");
         lblCompletedCount.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         lblCompletedCount.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
@@ -478,9 +484,11 @@ public class Dashboard extends javax.swing.JFrame {
             .addGroup(pnlCompletedCard1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pnlCompletedCard1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblCompletedTitle1)
-                    .addComponent(lblCompletedCount, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(pnlCompletedCard1Layout.createSequentialGroup()
+                        .addComponent(lblCompletedTitle1)
+                        .addGap(0, 9, Short.MAX_VALUE))
+                    .addComponent(lblCompletedCount, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         pnlCompletedCard1Layout.setVerticalGroup(
             pnlCompletedCard1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -489,7 +497,7 @@ public class Dashboard extends javax.swing.JFrame {
                 .addComponent(lblCompletedTitle1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblCompletedCount, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(30, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -498,22 +506,22 @@ public class Dashboard extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(pnlHeader, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                    .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(pnlSidebar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(pnlContent, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(pnlCompletedCard1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(pnlCompletedCard, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(pnlUpcomingTasks, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(pnlUpcomingTasks, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(pnlHeader, javax.swing.GroupLayout.PREFERRED_SIZE, 941, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 18, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -628,6 +636,7 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -643,7 +652,6 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JLabel lblPendingCount;
     private javax.swing.JButton lblResetDay;
     private javax.swing.JLabel lblRiskTitle;
-    private javax.swing.JLabel lblTitle;
     private javax.swing.JLabel lblUpcomingTitle;
     private javax.swing.JLabel lblWelcome;
     private javax.swing.JLabel lblWorkloadHours;
