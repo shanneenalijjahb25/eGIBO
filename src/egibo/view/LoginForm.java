@@ -27,8 +27,91 @@ public class LoginForm extends javax.swing.JFrame {
                 txtboxHours.setText("e.g., 2.5");
             }
         }
-});
-    }
+}); 
+
+    // 1. Get the CardLayout manager from your gray panel
+    java.awt.CardLayout cl = (java.awt.CardLayout) cardContainerPanel.getLayout();
+
+    // 2. Explicitly add your custom panels to the card container with string identifiers
+    cardContainerPanel.add(menuCard, "MENU");
+    cardContainerPanel.add(loginCard, "LOGIN");
+    cardContainerPanel.add(registerCard, "REGISTER");
+
+    // 3. Button Click Listeners to switch between them seamlessly
+    
+    //From Menu -> Go to Login or Register form
+    btnGoToLogin.addActionListener(e -> cl.show(cardContainerPanel, "LOGIN"));
+    btnGoToRegister.addActionListener(e -> cl.show(cardContainerPanel, "REGISTER"));
+    
+    //From Login or Register -> Go back to Menu
+    btnBackFromLogin.addActionListener(e -> cl.show(cardContainerPanel, "MENU"));
+    btnBackFromRegister.addActionListener(e -> cl.show(cardContainerPanel, "MENU"));
+    
+    // 4. Submit Listeners
+        // Login Submit (Shows account-not-found warning since SQL isn't hooked up yet)
+        btnLoginEnter.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                try {
+                    String username = txtUsername.getText().trim();
+                    if (username.isEmpty()) {
+                        javax.swing.JOptionPane.showMessageDialog(LoginForm.this, "Please enter your username.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    
+                    javax.swing.JOptionPane.showMessageDialog(LoginForm.this, 
+                        "Account does not exist! Please create an account / register first.", 
+                        "Account Not Found", 
+                        javax.swing.JOptionPane.WARNING_MESSAGE);
+                        
+                } catch (Exception ex) {
+                    logger.severe(ex.getMessage());
+                }
+            }
+        });
+        
+        // Register Submit (Validates fields and opens dashboard like usual)
+        btnRegisterEnter.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                try {
+                    String username = txtUsername1.getText().trim();
+                    String capacityText = txtboxHours.getText().trim();
+                    
+                    if (username.isEmpty() || capacityText.isEmpty() || capacityText.equals("e.g., 2.5")) {
+                        javax.swing.JOptionPane.showMessageDialog(LoginForm.this, "Please fill out all fields correctly.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    
+                    double dailyCapacity = Double.parseDouble(capacityText);
+                    if (dailyCapacity <= 0.0) {
+                        javax.swing.JOptionPane.showMessageDialog(LoginForm.this, 
+                            "Your capacity cannot be that low:<", 
+                            "Capacity Too Low", 
+                            javax.swing.JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+                    if (dailyCapacity > 16.0) {
+                        javax.swing.JOptionPane.showMessageDialog(LoginForm.this, 
+                            "Your capacity cannot be more than 16 hours.", 
+                            "Capacity Too High", 
+                            javax.swing.JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    
+                    egibo.model.StudentProfile studentProfile = new egibo.model.StudentProfile(username, dailyCapacity);
+                    egibo.model.TaskManager taskManager = new egibo.model.TaskManager();
+                    
+                    Dashboard dashboard = new Dashboard(studentProfile, taskManager);
+                    dashboard.setVisible(true);
+                    LoginForm.this.dispose();
+                } catch (NumberFormatException ex) {
+                    javax.swing.JOptionPane.showMessageDialog(LoginForm.this, "Please enter a valid number for work capacity.", "Format Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+     }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -40,14 +123,30 @@ public class LoginForm extends javax.swing.JFrame {
     private void initComponents() {
 
         titlePanel = new javax.swing.JPanel();
-        txtUsername = new javax.swing.JTextField();
+        cardContainerPanel = new javax.swing.JPanel();
+        menuCard = new javax.swing.JPanel();
+        btnGoToLogin = new javax.swing.JButton();
+        btnGoToRegister = new javax.swing.JButton();
+        loginCard = new javax.swing.JPanel();
         lblUsername = new javax.swing.JLabel();
-        txtboxHours = new javax.swing.JTextField();
+        txtUsername = new javax.swing.JTextField();
+        lblPassword = new javax.swing.JLabel();
+        jPasswordField1 = new javax.swing.JPasswordField();
+        btnLoginEnter = new javax.swing.JButton();
+        btnBackFromLogin = new javax.swing.JButton();
+        registerCard = new javax.swing.JPanel();
+        lblUsername1 = new javax.swing.JLabel();
+        txtUsername1 = new javax.swing.JTextField();
+        lblPassword1 = new javax.swing.JLabel();
+        jPasswordField2 = new javax.swing.JPasswordField();
         lblCapacity = new javax.swing.JLabel();
-        btnLogin = new javax.swing.JButton();
+        txtboxHours = new javax.swing.JTextField();
+        btnRegisterEnter = new javax.swing.JButton();
+        btnBackFromRegister = new javax.swing.JButton();
         jLabel8 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("eGIBO mo na!");
@@ -57,26 +156,171 @@ public class LoginForm extends javax.swing.JFrame {
         titlePanel.setBackground(new java.awt.Color(255, 255, 255));
         titlePanel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(167, 195, 195), 4, true));
 
-        txtUsername.setFont(new java.awt.Font("Calisto MT", 0, 12)); // NOI18N
-        txtUsername.addActionListener(this::txtUsernameActionPerformed);
+        cardContainerPanel.setBackground(new java.awt.Color(255, 255, 255));
+        cardContainerPanel.setLayout(new java.awt.CardLayout());
+
+        menuCard.setBackground(new java.awt.Color(255, 255, 255));
+        menuCard.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        btnGoToLogin.setBackground(new java.awt.Color(163, 218, 218));
+        btnGoToLogin.setFont(new java.awt.Font("SimSun-ExtB", 1, 18)); // NOI18N
+        btnGoToLogin.setText("Login");
+        menuCard.add(btnGoToLogin, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 20, 210, 40));
+
+        btnGoToRegister.setBackground(new java.awt.Color(163, 218, 218));
+        btnGoToRegister.setFont(new java.awt.Font("SimSun-ExtB", 1, 18)); // NOI18N
+        btnGoToRegister.setText("Create Account");
+        menuCard.add(btnGoToRegister, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 70, 210, 40));
+
+        cardContainerPanel.add(menuCard, "card6");
+
+        loginCard.setBackground(new java.awt.Color(255, 255, 255));
 
         lblUsername.setFont(new java.awt.Font("Franklin Gothic Medium", 0, 12)); // NOI18N
         lblUsername.setForeground(new java.awt.Color(67, 96, 96));
-        lblUsername.setText("Name:");
+        lblUsername.setText("Username:");
         lblUsername.setName("txtName"); // NOI18N
+
+        txtUsername.setFont(new java.awt.Font("Calisto MT", 0, 12)); // NOI18N
+        txtUsername.addActionListener(this::txtUsernameActionPerformed);
+
+        lblPassword.setFont(new java.awt.Font("Franklin Gothic Medium", 0, 12)); // NOI18N
+        lblPassword.setForeground(new java.awt.Color(67, 96, 96));
+        lblPassword.setText("Password: ");
+
+        btnLoginEnter.setBackground(new java.awt.Color(101, 220, 220));
+        btnLoginEnter.setFont(new java.awt.Font("SimSun-ExtG", 1, 12)); // NOI18N
+        btnLoginEnter.setText("Login");
+
+        btnBackFromLogin.setBackground(new java.awt.Color(214, 243, 243));
+        btnBackFromLogin.setFont(new java.awt.Font("SimSun-ExtB", 0, 12)); // NOI18N
+        btnBackFromLogin.setForeground(new java.awt.Color(0, 102, 102));
+        btnBackFromLogin.setText("Back");
+
+        javax.swing.GroupLayout loginCardLayout = new javax.swing.GroupLayout(loginCard);
+        loginCard.setLayout(loginCardLayout);
+        loginCardLayout.setHorizontalGroup(
+            loginCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(loginCardLayout.createSequentialGroup()
+                .addContainerGap(20, Short.MAX_VALUE)
+                .addGroup(loginCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(loginCardLayout.createSequentialGroup()
+                        .addGap(39, 39, 39)
+                        .addComponent(btnLoginEnter, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnBackFromLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(loginCardLayout.createSequentialGroup()
+                        .addGroup(loginCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblPassword)
+                            .addComponent(lblUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(loginCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtUsername)
+                            .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(14, 14, 14))
+        );
+        loginCardLayout.setVerticalGroup(
+            loginCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(loginCardLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addGroup(loginCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblUsername)
+                    .addComponent(txtUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(loginCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblPassword))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(loginCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnLoginEnter, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnBackFromLogin))
+                .addContainerGap(35, Short.MAX_VALUE))
+        );
+
+        lblUsername.getAccessibleContext().setAccessibleName("txtName");
+
+        cardContainerPanel.add(loginCard, "card8");
+
+        registerCard.setBackground(new java.awt.Color(255, 255, 255));
+
+        lblUsername1.setFont(new java.awt.Font("Franklin Gothic Medium", 0, 12)); // NOI18N
+        lblUsername1.setForeground(new java.awt.Color(67, 96, 96));
+        lblUsername1.setText("Username:");
+        lblUsername1.setName("txtName"); // NOI18N
+
+        txtUsername1.setFont(new java.awt.Font("Calisto MT", 0, 12)); // NOI18N
+        txtUsername1.addActionListener(this::txtUsername1ActionPerformed);
+
+        lblPassword1.setFont(new java.awt.Font("Franklin Gothic Medium", 0, 12)); // NOI18N
+        lblPassword1.setForeground(new java.awt.Color(67, 96, 96));
+        lblPassword1.setText("Password: ");
+
+        lblCapacity.setFont(new java.awt.Font("Franklin Gothic Medium", 0, 12)); // NOI18N
+        lblCapacity.setForeground(new java.awt.Color(67, 96, 96));
+        lblCapacity.setText("Work Capacity (hr):");
 
         txtboxHours.setFont(new java.awt.Font("Calisto MT", 0, 12)); // NOI18N
         txtboxHours.addActionListener(this::txtboxHoursActionPerformed);
 
-        lblCapacity.setFont(new java.awt.Font("Franklin Gothic Medium", 0, 12)); // NOI18N
-        lblCapacity.setForeground(new java.awt.Color(67, 96, 96));
-        lblCapacity.setText("Today's Work Capacity (hr):");
+        btnRegisterEnter.setBackground(new java.awt.Color(101, 220, 220));
+        btnRegisterEnter.setFont(new java.awt.Font("SimSun-ExtG", 1, 12)); // NOI18N
+        btnRegisterEnter.setText("Register & Login");
 
-        btnLogin.setBackground(new java.awt.Color(91, 128, 128));
-        btnLogin.setFont(new java.awt.Font("SimSun-ExtG", 3, 14)); // NOI18N
-        btnLogin.setForeground(new java.awt.Color(255, 255, 255));
-        btnLogin.setText("Enter Dashboard");
-        btnLogin.addActionListener(this::btnLoginActionPerformed);
+        btnBackFromRegister.setBackground(new java.awt.Color(214, 243, 243));
+        btnBackFromRegister.setFont(new java.awt.Font("SimSun-ExtB", 0, 12)); // NOI18N
+        btnBackFromRegister.setForeground(new java.awt.Color(0, 102, 102));
+        btnBackFromRegister.setText("Back");
+
+        javax.swing.GroupLayout registerCardLayout = new javax.swing.GroupLayout(registerCard);
+        registerCard.setLayout(registerCardLayout);
+        registerCardLayout.setHorizontalGroup(
+            registerCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(registerCardLayout.createSequentialGroup()
+                .addContainerGap(18, Short.MAX_VALUE)
+                .addGroup(registerCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(registerCardLayout.createSequentialGroup()
+                        .addComponent(lblCapacity)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(txtboxHours))
+                    .addGroup(registerCardLayout.createSequentialGroup()
+                        .addGroup(registerCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblPassword1)
+                            .addComponent(lblUsername1, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(registerCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtUsername1)
+                            .addComponent(jPasswordField2, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(16, 16, 16))
+            .addGroup(registerCardLayout.createSequentialGroup()
+                .addGap(50, 50, 50)
+                .addComponent(btnRegisterEnter, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnBackFromRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        registerCardLayout.setVerticalGroup(
+            registerCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(registerCardLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(registerCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblUsername1)
+                    .addComponent(txtUsername1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(registerCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jPasswordField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblPassword1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(registerCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtboxHours, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblCapacity))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(registerCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnRegisterEnter)
+                    .addComponent(btnBackFromRegister, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(18, 18, 18))
+        );
+
+        cardContainerPanel.add(registerCard, "card7");
 
         jLabel8.setFont(new java.awt.Font("Times New Roman", 3, 10)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(205, 224, 224));
@@ -91,51 +335,36 @@ public class LoginForm extends javax.swing.JFrame {
         titlePanelLayout.setHorizontalGroup(
             titlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(titlePanelLayout.createSequentialGroup()
-                .addGap(39, 39, 39)
-                .addComponent(jLabel3)
-                .addGap(0, 0, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, titlePanelLayout.createSequentialGroup()
-                .addContainerGap(18, Short.MAX_VALUE)
                 .addGroup(titlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(titlePanelLayout.createSequentialGroup()
-                        .addComponent(lblCapacity)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(txtboxHours, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(titlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(btnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 259, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(titlePanelLayout.createSequentialGroup()
-                            .addGroup(titlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(jLabel8)
-                                .addGroup(titlePanelLayout.createSequentialGroup()
-                                    .addComponent(lblUsername)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addComponent(txtUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGap(6, 6, 6))))
-                .addGap(17, 17, 17))
+                        .addContainerGap()
+                        .addComponent(cardContainerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(titlePanelLayout.createSequentialGroup()
+                        .addGap(61, 61, 61)
+                        .addComponent(jLabel3)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, titlePanelLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jLabel8)
+                .addGap(39, 39, 39))
         );
         titlePanelLayout.setVerticalGroup(
             titlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(titlePanelLayout.createSequentialGroup()
-                .addContainerGap(25, Short.MAX_VALUE)
+                .addGap(12, 12, 12)
                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel8)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(titlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblUsername))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(titlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtboxHours, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblCapacity, javax.swing.GroupLayout.PREFERRED_SIZE, 9, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(23, Short.MAX_VALUE))
+                .addComponent(cardContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
-        lblUsername.getAccessibleContext().setAccessibleName("txtName");
-
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/egibo/model/image/Screenshot 2026-10-20 112315.png"))); // NOI18N
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI Emoji", 1, 18)); // NOI18N
+        jLabel2.setText(" ⌨️. 🌿+-------------------- ");
+        jLabel2.setToolTipText("");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -143,85 +372,29 @@ public class LoginForm extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(titlePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(9, Short.MAX_VALUE))
+                .addComponent(titlePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(titlePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(titlePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel2)))
+                .addGap(13, 13, 13))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
-            try {
-                String username = txtUsername.getText().trim();
-                String capacityText = txtboxHours.getText().trim();
-        
-            // 1. Validate Username
-            if (username.isEmpty()) {
-                javax.swing.JOptionPane.showMessageDialog(this, 
-                    "Please enter your username to proceed.", 
-                    "Login Error", 
-                    javax.swing.JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        
-            // 2. Validate and Parse Capacity
-            if (capacityText.isEmpty()) {
-                javax.swing.JOptionPane.showMessageDialog(this, 
-                    "Please set your initial daily capacity.", 
-                    "Login Error", 
-                    javax.swing.JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        
-            double dailyCapacity = Double.parseDouble(capacityText);
-        
-            // 3. Enforce System Specifications (Capacity > 0 and <= 16)
-            if (dailyCapacity <= 0) {
-                javax.swing.JOptionPane.showMessageDialog(this, 
-                    "Your Daily Capacity can't be that low? :<",
-                    "Invalid Capacity", 
-                    javax.swing.JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-        
-            if (dailyCapacity > 16) {
-                javax.swing.JOptionPane.showMessageDialog(this, 
-                  "Daily capacity cannot exceed the strict 16-hour safety limit.", 
-                  "Capacity Exceeded", 
-                   javax.swing.JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        
-            // 4. Initialize Core OOP Objects
-            egibo.model.StudentProfile studentProfile = new egibo.model.StudentProfile(username, dailyCapacity);
-            egibo.model.TaskManager taskManager = new egibo.model.TaskManager();
-        
-             // 5. Launch Dashboard and Pass Objects
-            Dashboard dashboard = new Dashboard(studentProfile, taskManager);
-            dashboard.setVisible(true);
-        
-            // Close Login Form
-            this.dispose();
-        
-            } catch (NumberFormatException e) {
-                 javax.swing.JOptionPane.showMessageDialog(this, 
-                    "Please enter a valid numeric value for daily capacity.", 
-                    "Format Error", 
-                    javax.swing.JOptionPane.ERROR_MESSAGE);
-            }
-    }//GEN-LAST:event_btnLoginActionPerformed
-
+/**/
     private void txtUsernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUsernameActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtUsernameActionPerformed
@@ -229,6 +402,10 @@ public class LoginForm extends javax.swing.JFrame {
     private void txtboxHoursActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtboxHoursActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtboxHoursActionPerformed
+
+    private void txtUsername1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUsername1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtUsername1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -239,14 +416,30 @@ public class LoginForm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnLogin;
+    private javax.swing.JButton btnBackFromLogin;
+    private javax.swing.JButton btnBackFromRegister;
+    private javax.swing.JButton btnGoToLogin;
+    private javax.swing.JButton btnGoToRegister;
+    private javax.swing.JButton btnLoginEnter;
+    private javax.swing.JButton btnRegisterEnter;
+    private javax.swing.JPanel cardContainerPanel;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JPasswordField jPasswordField1;
+    private javax.swing.JPasswordField jPasswordField2;
     private javax.swing.JLabel lblCapacity;
+    private javax.swing.JLabel lblPassword;
+    private javax.swing.JLabel lblPassword1;
     private javax.swing.JLabel lblUsername;
+    private javax.swing.JLabel lblUsername1;
+    private javax.swing.JPanel loginCard;
+    private javax.swing.JPanel menuCard;
+    private javax.swing.JPanel registerCard;
     private javax.swing.JPanel titlePanel;
     private javax.swing.JTextField txtUsername;
+    private javax.swing.JTextField txtUsername1;
     private javax.swing.JTextField txtboxHours;
     // End of variables declaration//GEN-END:variables
 }
