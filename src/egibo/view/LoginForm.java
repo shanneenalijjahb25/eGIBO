@@ -48,24 +48,61 @@ public class LoginForm extends javax.swing.JFrame {
     btnBackFromRegister.addActionListener(e -> cl.show(cardContainerPanel, "MENU"));
     
     // 4. Submit Listeners
-        // Login Submit (Shows account-not-found warning since SQL isn't hooked up yet)
+        // Login Submit
         btnLoginEnter.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent e) {
+                String username = txtUsername.getText().trim();
+                String password = new String(jPasswordField1.getPassword());
+
+                if (username.isEmpty() || password.isEmpty()) {
+                    javax.swing.JOptionPane.showMessageDialog(
+                        LoginForm.this,
+                        "Please enter your username and password.",
+                        "Missing Information",
+                        javax.swing.JOptionPane.ERROR_MESSAGE
+                    );
+                    return;
+                }
+
                 try {
-                    String username = txtUsername.getText().trim();
-                    if (username.isEmpty()) {
-                        javax.swing.JOptionPane.showMessageDialog(LoginForm.this, "Please enter your username.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-                        return;
+                    egibo.database.UserDAO userDAO =
+                        new egibo.database.UserDAO();
+
+                    double capacity =
+                        userDAO.loginAndGetCapacity(username, password);
+
+                    if (capacity < 0) {
+                        javax.swing.JOptionPane.showMessageDialog(
+                            LoginForm.this,
+                            "Invalid username or password.",
+                            "Login Failed",
+                            javax.swing.JOptionPane.WARNING_MESSAGE
+                        );
+                    return;
                     }
-                    
-                    javax.swing.JOptionPane.showMessageDialog(LoginForm.this, 
-                        "Account does not exist! Please create an account / register first.", 
-                        "Account Not Found", 
-                        javax.swing.JOptionPane.WARNING_MESSAGE);
-                        
+
+                egibo.model.StudentProfile studentProfile =
+                    new egibo.model.StudentProfile(username, capacity);
+
+                egibo.model.TaskManager taskManager =
+                    new egibo.model.TaskManager();
+
+                Dashboard dashboard =
+                    new Dashboard(studentProfile, taskManager);
+
+                dashboard.setVisible(true);
+                LoginForm.this.dispose();
+
                 } catch (Exception ex) {
-                    logger.severe(ex.getMessage());
+                    logger.severe("Login error: " + ex.getMessage());
+
+                    javax.swing.JOptionPane.showMessageDialog(
+                        LoginForm.this,
+                        "Unable to log in. Please check your database connection.",
+                        "Database Error",
+                        javax.swing.JOptionPane.ERROR_MESSAGE
+                        );
                 }
             }
         });
@@ -73,44 +110,131 @@ public class LoginForm extends javax.swing.JFrame {
         // Register Submit (Validates fields and opens dashboard like usual)
         btnRegisterEnter.addActionListener(new java.awt.event.ActionListener() {
             @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                try {
-                    String username = txtUsername1.getText().trim();
-                    String capacityText = txtboxHours.getText().trim();
-                    
-                    if (username.isEmpty() || capacityText.isEmpty() || capacityText.equals("e.g., 2.5")) {
-                        javax.swing.JOptionPane.showMessageDialog(LoginForm.this, "Please fill out all fields correctly.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                    
-                    double dailyCapacity = Double.parseDouble(capacityText);
-                    if (dailyCapacity <= 0.0) {
-                        javax.swing.JOptionPane.showMessageDialog(LoginForm.this, 
-                            "Your capacity cannot be that low:<", 
-                            "Capacity Too Low", 
-                            javax.swing.JOptionPane.WARNING_MESSAGE);
-                        return;
-                    }
-                    if (dailyCapacity > 16.0) {
-                        javax.swing.JOptionPane.showMessageDialog(LoginForm.this, 
-                            "Your capacity cannot be more than 16 hours.", 
-                            "Capacity Too High", 
-                            javax.swing.JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                    
-                    egibo.model.StudentProfile studentProfile = new egibo.model.StudentProfile(username, dailyCapacity);
-                    egibo.model.TaskManager taskManager = new egibo.model.TaskManager();
-                    
-                    Dashboard dashboard = new Dashboard(studentProfile, taskManager);
-                    dashboard.setVisible(true);
-                    LoginForm.this.dispose();
-                } catch (NumberFormatException ex) {
-                    javax.swing.JOptionPane.showMessageDialog(LoginForm.this, "Please enter a valid number for work capacity.", "Format Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                public void actionPerformed(java.awt.event.ActionEvent e) {
+                String username = txtUsername1.getText().trim();
+                String password = new String(jPasswordField2.getPassword());
+                String capacityText = txtboxHours.getText().trim();
+
+                if (username.isEmpty()
+                    || password.isEmpty()
+                    || capacityText.isEmpty()
+                    || capacityText.equals("e.g., 2.5")) {
+
+                javax.swing.JOptionPane.showMessageDialog(
+                    LoginForm.this,
+                    "Please fill out all fields correctly.",
+                    "Missing Information",
+                    javax.swing.JOptionPane.ERROR_MESSAGE
+                    );
+                return;
                 }
+
+            double dailyCapacity;
+
+            try {
+                dailyCapacity = Double.parseDouble(capacityText);
+            } catch (NumberFormatException ex) {
+                javax.swing.JOptionPane.showMessageDialog(
+                    LoginForm.this,
+                    "Please enter a valid number for work capacity.",
+                    "Format Error",
+                    javax.swing.JOptionPane.ERROR_MESSAGE
+                );
+                return;
             }
-        });
-     }
+
+            if (!Double.isFinite(dailyCapacity) || dailyCapacity <= 0.0) {
+                javax.swing.JOptionPane.showMessageDialog(
+                    LoginForm.this,
+                    "Your capacity must be greater than 0 hours.",
+                    "Invalid Capacity",
+                    javax.swing.JOptionPane.WARNING_MESSAGE
+                );
+                return;
+            }
+
+            if (dailyCapacity > 16.0) {
+                javax.swing.JOptionPane.showMessageDialog(
+                    LoginForm.this,
+                    "Your capacity cannot be more than 16 hours.",
+                    "Capacity Too High",
+                    javax.swing.JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
+
+            try {
+                egibo.database.UserDAO userDAO =
+                    new egibo.database.UserDAO();
+
+                boolean registered =
+                    userDAO.register(username, password, dailyCapacity);
+
+                if (!registered) {
+                    javax.swing.JOptionPane.showMessageDialog(
+                        LoginForm.this,
+                        "Account registration failed. Please try again.",
+                        "Registration Failed",
+                        javax.swing.JOptionPane.ERROR_MESSAGE
+                    );
+                    return;
+                }
+
+                javax.swing.JOptionPane.showMessageDialog(
+                    LoginForm.this,
+                    "Account created successfully! You can now log in.",
+                    "Registration Successful",
+                    javax.swing.JOptionPane.INFORMATION_MESSAGE
+                );
+
+                // Return to the Login card instead of opening Dashboard.
+                java.awt.CardLayout cardLayout =
+                    (java.awt.CardLayout) cardContainerPanel.getLayout();
+
+                cardLayout.show(cardContainerPanel, "loginCard");
+
+                // Pre-fill the login username.
+                txtUsername.setText(username);
+
+                // Clear registration fields.
+                txtUsername1.setText("");
+                jPasswordField2.setText("");
+                txtboxHours.setText("");
+
+                jPasswordField1.requestFocusInWindow();
+
+            } catch (java.sql.SQLException ex) {
+                if ("23000".equals(ex.getSQLState())) {
+                    javax.swing.JOptionPane.showMessageDialog(
+                        LoginForm.this,
+                        "That username is already registered. Please choose another.",
+                        "Username Already Exists",
+                        javax.swing.JOptionPane.WARNING_MESSAGE
+                    );
+                } else {
+                    logger.severe("Registration SQL error: " + ex.getMessage());
+
+                    javax.swing.JOptionPane.showMessageDialog(
+                        LoginForm.this,
+                        "Unable to save your account. Please check your database.",
+                        "Database Error",
+                        javax.swing.JOptionPane.ERROR_MESSAGE
+                    );
+                }
+
+            } catch (Exception ex) {
+                logger.severe("Registration error: " + ex.getMessage());
+
+                javax.swing.JOptionPane.showMessageDialog(
+                    LoginForm.this,
+                    "An error occurred while creating your account.",
+                    "Registration Error",
+                    javax.swing.JOptionPane.ERROR_MESSAGE
+                );
+            }
+        }
+    });
+    }
 
 
     /**
@@ -165,6 +289,7 @@ public class LoginForm extends javax.swing.JFrame {
         btnGoToLogin.setBackground(new java.awt.Color(163, 218, 218));
         btnGoToLogin.setFont(new java.awt.Font("SimSun-ExtB", 1, 18)); // NOI18N
         btnGoToLogin.setText("Login");
+        btnGoToLogin.addActionListener(this::btnGoToLoginActionPerformed);
         menuCard.add(btnGoToLogin, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 20, 210, 40));
 
         btnGoToRegister.setBackground(new java.awt.Color(163, 218, 218));
@@ -356,7 +481,7 @@ public class LoginForm extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cardContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
+                .addComponent(cardContainerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 132, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -406,6 +531,10 @@ public class LoginForm extends javax.swing.JFrame {
     private void txtUsername1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUsername1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtUsername1ActionPerformed
+
+    private void btnGoToLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGoToLoginActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnGoToLoginActionPerformed
 
     /**
      * @param args the command line arguments
