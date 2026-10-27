@@ -7,13 +7,13 @@ import java.time.*;
 
 public abstract class Task {
     private static int taskCounter = 0;
-    
     private String title;
     private double hours;
     private int importance;
     private LocalDate dueDate;
     protected Status status = Status.PENDING;
     private String description;
+    private int taskId = -1;
     
     Task (String title, String description, double hours, int importance, LocalDate dueDate){
          if (Double.isNaN(hours) || hours <= 0) {
@@ -46,6 +46,13 @@ public abstract class Task {
         this.status = Status.PENDING;
     }
     
+    public int getTaskId() {
+    return taskId;
+    }
+
+    public void setTaskId(int taskId) {
+    this.taskId = taskId;
+    }
     public void markDone(){
         this.status = Status.DONE;
     }
