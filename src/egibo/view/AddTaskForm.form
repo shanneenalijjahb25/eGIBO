@@ -27,36 +27,41 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
-                  <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="txtboxDate" min="-2" pref="274" max="-2" attributes="0"/>
-                  </Group>
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="1" attributes="0">
-                          <Group type="103" alignment="1" groupAlignment="0" attributes="0">
-                              <Group type="102" alignment="1" attributes="0">
-                                  <EmptySpace pref="65" max="-2" attributes="0"/>
-                                  <Component id="btnSave" min="-2" pref="98" max="-2" attributes="0"/>
-                                  <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
-                                  <Component id="btnCancel" min="-2" pref="104" max="-2" attributes="0"/>
-                                  <EmptySpace min="-2" pref="56" max="-2" attributes="0"/>
-                              </Group>
-                              <Component id="pnlDynamicContainer" min="-2" pref="355" max="-2" attributes="0"/>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Component id="rbFixedTask" min="-2" pref="175" max="-2" attributes="0"/>
-                                  <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="rbFlexibleTask" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Component id="txtImportance" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                  <Component id="comboImportance" min="-2" pref="274" max="-2" attributes="0"/>
-                              </Group>
+                      <EmptySpace pref="65" max="-2" attributes="0"/>
+                      <Component id="btnSave" min="-2" pref="98" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
+                      <Component id="btnCancel" min="-2" pref="104" max="-2" attributes="0"/>
+                  </Group>
+                  <Component id="pnlDynamicContainer" alignment="0" min="-2" pref="355" max="-2" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="rbFixedTask" min="-2" pref="175" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Component id="rbFlexibleTask" min="-2" max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+              <EmptySpace max="32767" attributes="0"/>
+          </Group>
+          <Group type="102" alignment="1" attributes="0">
+              <EmptySpace max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Component id="txtboxDate" alignment="1" min="-2" pref="274" max="-2" attributes="0"/>
+                  <Group type="103" alignment="0" groupAlignment="1" attributes="0">
+                      <Group type="102" alignment="1" attributes="0">
+                          <Component id="txtImportance" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Component id="comboImportance" min="-2" pref="274" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="103" alignment="1" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Component id="lblEmoji" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
+                              <Component id="jLabel1" min="-2" pref="180" max="-2" attributes="0"/>
                           </Group>
-                          <Group type="102" alignment="1" attributes="0">
+                          <Group type="102" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="lblTitle" min="-2" max="-2" attributes="0"/>
                                   <Component id="lblDescription" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -65,16 +70,13 @@
                               <EmptySpace min="-2" pref="13" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="txtboxDescription" min="-2" pref="276" max="-2" attributes="0"/>
-                                  <Group type="103" alignment="0" groupAlignment="1" attributes="0">
-                                      <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                                      <Component id="txtboxTitle" min="-2" pref="275" max="-2" attributes="0"/>
-                                  </Group>
+                                  <Component id="txtboxTitle" alignment="0" min="-2" pref="275" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
                   </Group>
               </Group>
-              <EmptySpace pref="36" max="32767" attributes="0"/>
+              <EmptySpace min="-2" pref="37" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -82,8 +84,11 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="1" attributes="0">
               <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
-              <Component id="jLabel1" min="-2" pref="47" max="-2" attributes="0"/>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="lblEmoji" min="-2" pref="47" max="-2" attributes="0"/>
+                  <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
@@ -106,7 +111,7 @@
                   <Component id="txtImportance" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="comboImportance" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="rbFixedTask" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="rbFlexibleTask" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -118,13 +123,13 @@
                   <Component id="btnSave" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnCancel" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="17" max="32767" attributes="0"/>
+              <EmptySpace pref="32" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="javax.swing.JLabel" name="jLabel1">
+    <Component class="javax.swing.JLabel" name="lblEmoji">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Segoe UI Emoji" size="36" style="1"/>
@@ -132,7 +137,7 @@
         <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
           <Color blue="66" green="66" red="0" type="rgb"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="\ud83d\udcab&#x2da;  : Add Task" containsInvalidXMLChars="true"/>
+        <Property name="text" type="java.lang.String" value="\ud83d\udcab&#x2da;  :" containsInvalidXMLChars="true"/>
         <Property name="verticalAlignment" type="int" value="3"/>
         <Property name="alignmentY" type="float" value="0.0"/>
         <Property name="horizontalTextPosition" type="int" value="0"/>
@@ -325,23 +330,34 @@
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="txtHours" alignment="0" min="-2" pref="144" max="-2" attributes="0"/>
+                          <Component id="lblFlexTime" alignment="0" min="-2" pref="118" max="-2" attributes="0"/>
+                      </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="txtHours" min="-2" pref="154" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="txtboxHours" pref="179" max="32767" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="txtboxHours" max="32767" attributes="0"/>
+                          <Component id="txtboxFlexTime" pref="165" max="32767" attributes="0"/>
+                      </Group>
+                      <EmptySpace pref="20" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace pref="29" max="32767" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="txtHours" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="txtboxHours" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="lblFlexTime" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="txtboxFlexTime" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace pref="11" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -359,6 +375,24 @@
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="txtboxHours">
+              <Properties>
+                <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="eb" green="ea" red="d5" type="rgb"/>
+                </Property>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="lblFlexTime">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Segoe UI" size="12" style="2"/>
+                </Property>
+                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="99" green="99" red="0" type="rgb"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Schedule Work Time:"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="txtboxFlexTime">
               <Properties>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="eb" green="ea" red="d5" type="rgb"/>
@@ -407,6 +441,9 @@
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Times New Roman" size="12" style="1"/>
         </Property>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="33" green="33" red="0" type="rgb"/>
+        </Property>
         <Property name="maximumRowCount" type="int" value="5"/>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
           <StringArray count="7">
@@ -420,6 +457,9 @@
           </StringArray>
         </Property>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="comboImportanceActionPerformed"/>
+      </Events>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
       </AuxValues>
@@ -433,6 +473,17 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtboxDate">
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel1">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Georgia" size="36" style="3"/>
+        </Property>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="66" green="66" red="0" type="rgb"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Add Task"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

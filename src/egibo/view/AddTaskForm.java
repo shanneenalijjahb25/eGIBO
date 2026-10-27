@@ -12,16 +12,21 @@ import java.time.LocalTime;
 public class AddTaskForm extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AddTaskForm.class.getName());
-
+    
     private final egibo.model.TaskManager taskManager;
     private final Dashboard parentDashboard;
     private final java.awt.CardLayout cardLayout;
     
     public AddTaskForm(Dashboard parent, egibo.model.TaskManager taskManager) {
+        setUndecorated(true);
         initComponents();
+        
+        this.getRootPane().setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 102, 102), 3));
         setLocationRelativeTo(parent);
+        
         this.parentDashboard = parent;
         this.taskManager = taskManager;   
+        
 
 // 1. Group the radio buttons together programmatically
     btngroupTaskType.add(rbFixedTask);
@@ -103,6 +108,10 @@ public class AddTaskForm extends javax.swing.JFrame {
         // --- EXPECTED HOURS PLACEHOLDER ---
         txtboxHours.setForeground(java.awt.Color.GRAY);
         txtboxHours.setText("e.g., 2.5");
+        
+        // --- FLEXIBLE TASK TIME PLACEHOLDER ---
+        txtboxFlexTime.setForeground(java.awt.Color.GRAY);
+        txtboxFlexTime.setText("HH:mm (e.g., 14:00)");
 
         txtboxHours.addFocusListener(new java.awt.event.FocusAdapter() {
             @Override
@@ -120,6 +129,23 @@ public class AddTaskForm extends javax.swing.JFrame {
                 }
             }
         });
+        
+        txtboxFlexTime.addFocusListener(new java.awt.event.FocusAdapter() {
+        @Override
+        public void focusGained(java.awt.event.FocusEvent evt) {
+            if (txtboxFlexTime.getText().equals("HH:mm (e.g., 14:00)")) {
+                txtboxFlexTime.setText("");
+                txtboxFlexTime.setForeground(java.awt.Color.BLACK);
+            }
+        }
+        @Override
+        public void focusLost(java.awt.event.FocusEvent evt) {
+            if (txtboxFlexTime.getText().isEmpty()) {
+                txtboxFlexTime.setForeground(java.awt.Color.GRAY);
+                txtboxFlexTime.setText("HH:mm (e.g., 14:00)");
+            }
+        }
+    });
 }
 
     /**
@@ -132,7 +158,7 @@ public class AddTaskForm extends javax.swing.JFrame {
     private void initComponents() {
 
         btngroupTaskType = new javax.swing.ButtonGroup();
-        jLabel1 = new javax.swing.JLabel();
+        lblEmoji = new javax.swing.JLabel();
         lblTitle = new javax.swing.JLabel();
         txtboxDescription = new javax.swing.JTextField();
         lblDescription = new javax.swing.JLabel();
@@ -148,22 +174,25 @@ public class AddTaskForm extends javax.swing.JFrame {
         pnlFlexibleTask = new javax.swing.JPanel();
         txtHours = new javax.swing.JLabel();
         txtboxHours = new javax.swing.JTextField();
+        lblFlexTime = new javax.swing.JLabel();
+        txtboxFlexTime = new javax.swing.JTextField();
         btnSave = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
         txtImportance = new javax.swing.JLabel();
         comboImportance = new javax.swing.JComboBox<>();
         txtDate = new javax.swing.JLabel();
         txtboxDate = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI Emoji", 1, 36)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(0, 102, 102));
-        jLabel1.setText("💫˚  : Add Task");
-        jLabel1.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
-        jLabel1.setAlignmentY(0.0F);
-        jLabel1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jLabel1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        lblEmoji.setFont(new java.awt.Font("Segoe UI Emoji", 1, 36)); // NOI18N
+        lblEmoji.setForeground(new java.awt.Color(0, 102, 102));
+        lblEmoji.setText("💫˚  :");
+        lblEmoji.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
+        lblEmoji.setAlignmentY(0.0F);
+        lblEmoji.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        lblEmoji.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
         lblTitle.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
         lblTitle.setText("Title: ");
@@ -248,25 +277,39 @@ public class AddTaskForm extends javax.swing.JFrame {
 
         txtboxHours.setBackground(new java.awt.Color(213, 234, 235));
 
+        lblFlexTime.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
+        lblFlexTime.setForeground(new java.awt.Color(0, 153, 153));
+        lblFlexTime.setText("Schedule Work Time:");
+
+        txtboxFlexTime.setBackground(new java.awt.Color(213, 234, 235));
+
         javax.swing.GroupLayout pnlFlexibleTaskLayout = new javax.swing.GroupLayout(pnlFlexibleTask);
         pnlFlexibleTask.setLayout(pnlFlexibleTaskLayout);
         pnlFlexibleTaskLayout.setHorizontalGroup(
             pnlFlexibleTaskLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlFlexibleTaskLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(txtHours, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(16, 16, 16)
+                .addGroup(pnlFlexibleTaskLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtHours, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblFlexTime, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtboxHours, javax.swing.GroupLayout.DEFAULT_SIZE, 179, Short.MAX_VALUE)
-                .addContainerGap())
+                .addGroup(pnlFlexibleTaskLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(txtboxHours)
+                    .addComponent(txtboxFlexTime, javax.swing.GroupLayout.DEFAULT_SIZE, 165, Short.MAX_VALUE))
+                .addContainerGap(20, Short.MAX_VALUE))
         );
         pnlFlexibleTaskLayout.setVerticalGroup(
             pnlFlexibleTaskLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlFlexibleTaskLayout.createSequentialGroup()
-                .addContainerGap(29, Short.MAX_VALUE)
+            .addGroup(pnlFlexibleTaskLayout.createSequentialGroup()
+                .addGap(15, 15, 15)
                 .addGroup(pnlFlexibleTaskLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtHours)
                     .addComponent(txtboxHours, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(25, 25, 25))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnlFlexibleTaskLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblFlexTime)
+                    .addComponent(txtboxFlexTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(11, Short.MAX_VALUE))
         );
 
         pnlDynamicContainer.add(pnlFlexibleTask, "card3");
@@ -284,40 +327,53 @@ public class AddTaskForm extends javax.swing.JFrame {
         txtImportance.setText("Priority Level:");
 
         comboImportance.setFont(new java.awt.Font("Times New Roman", 1, 12)); // NOI18N
+        comboImportance.setForeground(new java.awt.Color(0, 51, 51));
         comboImportance.setMaximumRowCount(5);
         comboImportance.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1 — Low Priority (Optional / Do when free)", "2 — Minor (Nice to finish today)", "3 — Normal (Standard task)", "4 — High (Important / Strict Deadline)", "5 — Urgent (Critical / Do Immediately)", " ", " " }));
+        comboImportance.addActionListener(this::comboImportanceActionPerformed);
 
         txtDate.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
         txtDate.setText("Date:");
+
+        jLabel1.setFont(new java.awt.Font("Georgia", 3, 36)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(0, 102, 102));
+        jLabel1.setText("Add Task");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(25, 25, 25)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(txtboxDate, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(32, 32, 32)
+                        .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(94, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addGap(25, 25, 25)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(32, 32, 32)
-                                    .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(56, 56, 56))
-                                .addComponent(pnlDynamicContainer, javax.swing.GroupLayout.PREFERRED_SIZE, 355, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(rbFixedTask, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(rbFlexibleTask))
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(txtImportance)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addComponent(comboImportance, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(pnlDynamicContainer, javax.swing.GroupLayout.PREFERRED_SIZE, 355, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(rbFixedTask, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(rbFlexibleTask)))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(txtboxDate, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(txtImportance)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(comboImportance, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblEmoji)
+                                .addGap(28, 28, 28)
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(lblTitle)
@@ -326,17 +382,17 @@ public class AddTaskForm extends javax.swing.JFrame {
                                 .addGap(13, 13, 13)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(txtboxDescription, javax.swing.GroupLayout.PREFERRED_SIZE, 276, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addComponent(jLabel1)
-                                        .addComponent(txtboxTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
-                .addContainerGap(36, Short.MAX_VALUE))
+                                    .addComponent(txtboxTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                .addGap(37, 37, 37))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(27, 27, 27)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblEmoji, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(6, 6, 6)
@@ -354,7 +410,7 @@ public class AddTaskForm extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtImportance)
                     .addComponent(comboImportance, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addGap(32, 32, 32)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(rbFixedTask)
                     .addComponent(rbFlexibleTask))
@@ -364,7 +420,7 @@ public class AddTaskForm extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSave)
                     .addComponent(btnCancel))
-                .addContainerGap(17, Short.MAX_VALUE))
+                .addContainerGap(32, Short.MAX_VALUE))
         );
 
         pack();
@@ -380,57 +436,134 @@ public class AddTaskForm extends javax.swing.JFrame {
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         try {
-        // Read common fields
-        String title = txtboxTitle.getText().trim();
-        String description = txtboxDescription.getText().trim();
-        LocalDate today = LocalDate.now();
-        // 1. Get the selected item from your combo box (make sure to name your combo box variable, e.g., comboImportance)
-        String selectedImportance = comboImportance.getSelectedItem().toString();
-
-        // 2. Extract the first character and convert it to an int (1 to 5)
-        int importance = Character.getNumericValue(selectedImportance.charAt(0));
-        
-        // 3. Parse date safely using your snippet
-        String dateText = txtboxDate.getText().trim();
-        LocalDate taskDate = LocalDate.now();
-        
-        if (!dateText.isEmpty() && !dateText.equals("YYYY-MM-DD")) {
-            taskDate = LocalDate.parse(dateText);
-        }
-
-        if (rbFixedTask.isSelected()) {
-            // Fixed Task requires: LocalTime start, LocalTime end, String title, double hours, int importance, LocalDate eventDate
-            LocalTime startTime = LocalTime.parse(txtboxStartTime.getText().trim()); // Format like "08:00"
-            LocalTime endTime = LocalTime.parse(txtboxEndTime.getText().trim());     // Format like "10:00"
+            // Read common fields
+            String title = txtboxTitle.getText().trim();
+            String description = txtboxDescription.getText().trim();
             
-            // Note: FixedTask automatically computes hours internally via duration between start and end!
-            taskManager.addFixedTask(startTime, endTime, title, description, 0.0, importance, today);
+            if (title.isEmpty()) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Please enter a task title.", "Validation Error", javax.swing.JOptionPane.WARNING_MESSAGE);
+                return;
+            }
 
-        } else {
-            // Flexible Task requires: String title, double hours, int importance, LocalDate dueDate
-            double hours = Double.parseDouble(txtboxHours.getText().trim());
+            // Priority Extraction
+            String selectedImportance = comboImportance.getSelectedItem().toString();
+            int importance = Character.getNumericValue(selectedImportance.charAt(0));
             
-            taskManager.addFlexibleTask(title,description, hours, importance, today);
-        }
+            // Date Validation with Permission Prompt
+            String dateText = txtboxDate.getText().trim();
+            LocalDate taskDate = null;
+            
+            if (dateText.isEmpty() || dateText.equals("YYYY-MM-DD")) {
+                int choice = javax.swing.JOptionPane.showConfirmDialog(this, 
+                    "No date was entered. Would you like the system to set it to today?", 
+                    "Default Date Prompt", 
+                    javax.swing.JOptionPane.YES_NO_OPTION, 
+                    javax.swing.JOptionPane.QUESTION_MESSAGE);
+                
+                if (choice == javax.swing.JOptionPane.YES_OPTION) {
+                    taskDate = LocalDate.now();
+                } else {
+                    return; 
+                }
+            } else {
+                taskDate = LocalDate.parse(dateText);
+            }
 
-        // Refresh main dashboard table/counters and close form
-        if (parentDashboard != null) {
-            parentDashboard.refreshDashboard(); // Make sure Dashboard has a public refreshDashboard() method
-        }
-        this.dispose();
+            boolean hasConflict = false;
 
-    } catch (java.time.format.DateTimeParseException e) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Please enter valid times in HH:mm format (e.g., 08:30).", "Time Format Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-    } catch (NumberFormatException e) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Please enter a valid number for working hours.", "Input Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-    } catch (IllegalArgumentException e) {
-        javax.swing.JOptionPane.showMessageDialog(this, e.getMessage(), "Validation Error", javax.swing.JOptionPane.WARNING_MESSAGE);
-    }
+            if (rbFixedTask.isSelected()) {
+                LocalTime startTime = LocalTime.parse(txtboxStartTime.getText().trim()); 
+                LocalTime endTime = LocalTime.parse(txtboxEndTime.getText().trim()); 
+                
+                egibo.model.FixedTask newTask = new egibo.model.FixedTask(
+                    startTime,  
+                    endTime,     
+                    title,       
+                    description, 
+                    0.0,         
+                    importance, 
+                    taskDate
+                );
+                
+                // Polymorphic conflict check
+                for (egibo.model.Task existingTask : taskManager.getPendingTasks()) {
+                    if (existingTask.occupiesTime(newTask)) {
+                        hasConflict = true;
+                        break;
+                    }
+                }
+                
+                if (hasConflict) {
+                    javax.swing.JOptionPane.showMessageDialog(this, 
+                        "Warning: This scheduled time slot conflicts with an existing task!", 
+                        "Schedule Conflict", 
+                        javax.swing.JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                
+                taskManager.addFixedTask(startTime, endTime, title, description, 0.0, importance, taskDate);
+
+            } else {
+                // Flexible Task: Read hours and scheduled work start time
+                double hours = Double.parseDouble(txtboxHours.getText().trim());
+                LocalTime workStartTime = LocalTime.parse(txtboxFlexTime.getText().trim());
+                
+                // Instantiate FlexibleTask with the new workStartTime parameter
+                egibo.model.FlexibleTask newTask = new egibo.model.FlexibleTask(
+                    title, 
+                    description, 
+                    hours, 
+                    importance, 
+                    taskDate, 
+                    workStartTime
+                );
+                
+                // Run the conflict check against pending tasks
+                for (egibo.model.Task existingTask : taskManager.getPendingTasks()) {
+                    if (existingTask.occupiesTime(newTask)) {
+                        hasConflict = true;
+                        break;
+                    }
+                }
+                
+                if (hasConflict) {
+                    javax.swing.JOptionPane.showMessageDialog(this, 
+                        "Warning: This scheduled working time conflicts with an existing task allocation!", 
+                        "Schedule Conflict", 
+                        javax.swing.JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                
+                // Save to taskManager (update parameters here if your addFlexibleTask method also needs workStartTime)
+                taskManager.addFlexibleTask(title, description, hours, importance, taskDate, workStartTime);
+            }
+
+            if (parentDashboard != null) {
+                parentDashboard.refreshDashboard(); 
+            }
+            
+            java.awt.Window parent = this.getOwner();
+                if (parent != null) {
+                    parent.setVisible(true);
+                }
+            this.dispose();
+
+        } catch (java.time.format.DateTimeParseException e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Please enter valid dates (YYYY-MM-DD) or times in HH:mm format.", "Format Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        } catch (NumberFormatException e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Please enter a valid number for working hours.", "Input Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        } catch (IllegalArgumentException e) {
+            javax.swing.JOptionPane.showMessageDialog(this, e.getMessage(), "Validation Error", javax.swing.JOptionPane.WARNING_MESSAGE);
+        }
     }//GEN-LAST:event_btnSaveActionPerformed
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         this.dispose();
     }//GEN-LAST:event_btnCancelActionPerformed
+
+    private void comboImportanceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboImportanceActionPerformed
+        //TODO add your handling code here:
+    }//GEN-LAST:event_comboImportanceActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -440,7 +573,9 @@ public class AddTaskForm extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> comboImportance;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel lblDescription;
+    private javax.swing.JLabel lblEmoji;
     private javax.swing.JLabel lblEndTime;
+    private javax.swing.JLabel lblFlexTime;
     private javax.swing.JLabel lblStartTime;
     private javax.swing.JLabel lblTitle;
     private javax.swing.JPanel pnlDynamicContainer;
@@ -454,6 +589,7 @@ public class AddTaskForm extends javax.swing.JFrame {
     private javax.swing.JTextField txtboxDate;
     private javax.swing.JTextField txtboxDescription;
     private javax.swing.JTextField txtboxEndTime;
+    private javax.swing.JTextField txtboxFlexTime;
     private javax.swing.JTextField txtboxHours;
     private javax.swing.JTextField txtboxStartTime;
     private javax.swing.JTextField txtboxTitle;

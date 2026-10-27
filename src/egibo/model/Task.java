@@ -86,7 +86,7 @@ public abstract class Task {
     return description;
 }
     
-    public abstract boolean occupiesTime(LocalDateTime now);
+    public abstract boolean occupiesTime(Task otherTask);
     public abstract String getTypeLabel();
     public abstract String getScheduleText();
 }

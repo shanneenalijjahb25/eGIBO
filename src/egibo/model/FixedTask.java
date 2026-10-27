@@ -37,13 +37,19 @@ public class FixedTask extends Task{
     }
      
     @Override
-    public boolean occupiesTime(LocalDateTime now) {
-        if (!now.toLocalDate().equals(getScheduledDate())) {
-            return false;
-        }
-        
-        LocalTime currentTime = now.toLocalTime();
-        return !currentTime.isBefore(startTime) && !currentTime.isAfter(endTime);
+    public boolean occupiesTime(Task otherTask) {
+        if (this.getDueDate() == null || otherTask.getDueDate() == null) return false;
+    if (!this.getDueDate().equals(otherTask.getDueDate())) return false;
+    
+    LocalTime otherTime = null;
+    if (otherTask instanceof FixedTask) {
+        otherTime = ((FixedTask) otherTask).getStartTime();
+    } else if (otherTask instanceof FlexibleTask) {
+        otherTime = ((FlexibleTask) otherTask).getWorkStartTime();
+    }
+    
+    // Make sure neither startTime nor otherTime is null before comparing
+    return this.startTime != null && otherTime != null && this.startTime.equals(otherTime);
     }
     
     @Override
@@ -51,12 +57,8 @@ public class FixedTask extends Task{
         return "Fixed";
     }
     
-    
-    
     @Override
     public String getScheduleText(){
         return startTime.format(CLOCK) + " - " + endTime.format(CLOCK);
     }
-   
-    
 }
