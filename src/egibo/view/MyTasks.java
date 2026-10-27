@@ -191,14 +191,26 @@ public class MyTasks extends javax.swing.JFrame {
 
         // --- Edit Task Action ---
         btnEditTask.addActionListener(e -> {
-            int selectedRow = tblTasks.getSelectedRow();
-            if (selectedRow != -1) {
-                int modelRow = tblTasks.convertRowIndexToModel(selectedRow);
-                // Hook up your Edit Task form or logic here using taskManager.getTasks().get(modelRow)
-                JOptionPane.showMessageDialog(this, "Edit feature for row " + (modelRow + 1) + " selected.", "Edit Task", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(this, "Please select a task to edit.", "Selection Required", JOptionPane.WARNING_MESSAGE);
+            // 1. Get the selected row index from your table
+            int selectedRow = tblTasks.getSelectedRow(); // Replace with your actual JTable variable name
+
+            if (selectedRow == -1) {
+                javax.swing.JOptionPane.showMessageDialog(
+                    this,
+                    "Please select a task from the table to edit.",
+                    "No Task Selected",
+                    javax.swing.JOptionPane.WARNING_MESSAGE
+                );
+                return;
             }
+
+            // 2. Retrieve the actual Task object corresponding to that row from your TaskManager / Table Model
+            // (Assuming your table maps directly to your pending/all tasks list)
+            egibo.model.Task selectedTask = taskManager.getPendingTasks().get(selectedRow); 
+
+            // 3. Open the EditTaskForm and pass the selected task along
+            EditTaskForm editForm = new EditTaskForm(parentDashboard, taskManager, selectedTask);
+            editForm.setVisible(true);
         });
     }
         
