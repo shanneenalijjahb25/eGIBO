@@ -1,4 +1,3 @@
-
 package egibo.database;
 
 import java.sql.Connection;
@@ -13,7 +12,7 @@ public class DatabaseConnection {
     private static final String DB_USER = "root";
 
     private static final String DB_PASSWORD =
-            "Database@123";
+            "hulaan mo";
 
     public static Connection getConnection()
             throws SQLException {
