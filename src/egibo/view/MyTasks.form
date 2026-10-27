@@ -74,23 +74,21 @@
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Component id="cmbPriority" min="-2" pref="129" max="-2" attributes="0"/>
                       </Group>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="lblMyTasks" min="-2" max="-2" attributes="0"/>
-                          <Component id="lblSubtitle" alignment="0" min="-2" pref="233" max="-2" attributes="0"/>
-                          <Group type="103" alignment="0" groupAlignment="1" attributes="0">
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Component id="lblTaskCount" min="-2" pref="146" max="-2" attributes="0"/>
-                                  <EmptySpace max="32767" attributes="0"/>
-                                  <Component id="btnAddTask" min="-2" pref="152" max="-2" attributes="0"/>
-                                  <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
-                                  <Component id="btnEditTask" min="-2" pref="150" max="-2" attributes="0"/>
-                                  <EmptySpace min="-2" pref="104" max="-2" attributes="0"/>
-                                  <Component id="btnMarkDone" min="-2" pref="134" max="-2" attributes="0"/>
-                                  <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
-                                  <Component id="btnDeleteTask" min="-2" pref="139" max="-2" attributes="0"/>
-                              </Group>
-                              <Component id="scrollTasks" alignment="0" min="-2" pref="864" max="-2" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="lblTaskCount" min="-2" pref="146" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" max="-2" attributes="0"/>
+                              <Component id="btnAddTask" min="-2" pref="152" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
+                              <Component id="btnEditTask" min="-2" pref="150" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="104" max="-2" attributes="0"/>
+                              <Component id="btnMarkDone" min="-2" pref="134" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
+                              <Component id="btnDeleteTask" min="-2" pref="139" max="-2" attributes="0"/>
                           </Group>
+                          <Component id="scrollTasks" alignment="0" min="-2" pref="864" max="-2" attributes="0"/>
+                          <Component id="lblSubtitle" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                   <EmptySpace pref="29" max="32767" attributes="0"/>
