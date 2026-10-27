@@ -82,17 +82,47 @@ public class LoginForm extends javax.swing.JFrame {
                     return;
                     }
 
-                egibo.model.StudentProfile studentProfile =
-                    new egibo.model.StudentProfile(username, capacity);
+               int userId = userDAO.getUserId(username);
 
-                egibo.model.TaskManager taskManager =
-                    new egibo.model.TaskManager();
+            if (userId <= 0) {
+                javax.swing.JOptionPane.showMessageDialog(
+                LoginForm.this,
+                    "Unable to identify your account.",
+                    "Login Failed",
+                javax.swing.JOptionPane.ERROR_MESSAGE
+                );
+            return;
+            }
+            
+            egibo.model.StudentProfile studentProfile =
+                new egibo.model.StudentProfile(username, capacity);
 
-                Dashboard dashboard =
-                    new Dashboard(studentProfile, taskManager);
+            egibo.model.TaskManager taskManager;
 
-                dashboard.setVisible(true);
-                LoginForm.this.dispose();
+            try {
+                taskManager = new egibo.model.TaskManager(userId);
+            } catch (java.sql.SQLException sqlEx) {
+                logger.log(
+                java.util.logging.Level.SEVERE,
+                    "Failed to load tasks from database.",
+                sqlEx
+            );
+                
+            javax.swing.JOptionPane.showMessageDialog(
+                LoginForm.this,
+                "Could not load your tasks from the database. "
+                    + "Please check your database connection.",
+                "Database Error",
+                javax.swing.JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+
+        Dashboard dashboard =
+            new Dashboard(studentProfile, taskManager);
+
+            dashboard.setVisible(true);
+            LoginForm.this.dispose();
 
                 } catch (Exception ex) {
                     logger.severe("Login error: " + ex.getMessage());
