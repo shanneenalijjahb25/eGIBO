@@ -120,7 +120,54 @@ public class TaskDAO {
 
         return loadedTasks;
     }
+    public boolean updateTask(int userId, Task task) throws SQLException {
 
+        String sql = "UPDATE tasks SET "
+                + "title = ?, description = ?, task_type = ?, "
+                + "hours = ?, importance = ?, due_date = ?, "
+                + "status = ?, start_time = ?, end_time = ?, "
+                + "work_start_time = ? "
+                + "WHERE task_id = ? AND user_id = ?";
+
+        try (Connection con = DatabaseConnection.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, task.getTitle());
+            ps.setString(2, task.getDescription());
+            ps.setString(3,
+                    task instanceof FixedTask ? "FIXED" : "FLEXIBLE");
+            ps.setDouble(4, task.getHours());
+            ps.setInt(5, task.getImportance());
+            ps.setDate(6, Date.valueOf(task.getDueDate()));
+            ps.setString(7, task.getStatus().name());
+
+            if (task instanceof FixedTask) {
+                FixedTask fixed = (FixedTask) task;
+
+                ps.setTime(8, Time.valueOf(fixed.getStartTime()));
+                ps.setTime(9, Time.valueOf(fixed.getEndTime()));
+                ps.setNull(10, java.sql.Types.TIME);
+            } else {
+                FlexibleTask flexible = (FlexibleTask) task;
+
+                ps.setNull(8, java.sql.Types.TIME);
+                ps.setNull(9, java.sql.Types.TIME);
+
+                if (flexible.getWorkStartTime() != null) {
+                    ps.setTime(10,
+                            Time.valueOf(flexible.getWorkStartTime()));
+                } else {
+                    ps.setNull(10, java.sql.Types.TIME);
+                }
+            }
+
+            ps.setInt(11, task.getTaskId());
+            ps.setInt(12, userId);
+
+            return ps.executeUpdate() == 1;
+        }
+    }
+    
     public boolean updateTaskStatus(
             int userId, Task task) throws SQLException {
 
