@@ -22,7 +22,7 @@ public class EditTaskForm extends javax.swing.JFrame {
     private Dashboard parentDashboard;
     private TaskManager taskManager;
     private Task taskToEdit;
-     private final java.awt.CardLayout cardLayout;
+    private final java.awt.CardLayout cardLayout;
     
     /**
      * Creates new form EditTaskForm
@@ -48,6 +48,7 @@ public class EditTaskForm extends javax.swing.JFrame {
         cardLayout = (java.awt.CardLayout) pnlDynamicContainer.getLayout(); 
         // Populate form fields with the current task details
         populateFields();
+        setLocationRelativeTo(parentDashboard);
     } 
     
     private void populateFields() {
@@ -384,35 +385,121 @@ public class EditTaskForm extends javax.swing.JFrame {
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         try {
-            // Read common fields
+            if (taskToEdit == null) {
+                throw new IllegalArgumentException("No task selected to edit.");
+            }
+
             String title = txtboxTitle.getText().trim();
             String description = jTextArea1.getText().trim();
 
             if (title.isEmpty()) {
-                javax.swing.JOptionPane.showMessageDialog(this, "Please enter a task title.", "Validation Error", javax.swing.JOptionPane.WARNING_MESSAGE);
+                javax.swing.JOptionPane.showMessageDialog(
+                        this, "Please enter a task title.",
+                        "Validation Error",
+                        javax.swing.JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
-            // Priority Extraction
-            String selectedImportance = comboImportance.getSelectedItem().toString();
-            int importance = Character.getNumericValue(selectedImportance.charAt(0));
+            String selectedImportance =
+                    comboImportance.getSelectedItem().toString();
+            int importance =
+                    Character.getNumericValue(selectedImportance.charAt(0));
 
-            // Date Validation with Permission Prompt
-            String dateText = txtboxDate.getText().trim();
-            LocalDate taskDate = null;
+            LocalDate taskDate =
+                    LocalDate.parse(txtboxDate.getText().trim());
 
-            java.awt.Window parent = this.getOwner();
-            if (parent != null) {
-                parent.setVisible(true);
+            Task editedTask;
+
+            if (taskToEdit instanceof FixedTask) {
+                LocalTime startTime =
+                        LocalTime.parse(txtboxStartTime.getText().trim());
+                LocalTime endTime =
+                        LocalTime.parse(txtboxEndTime.getText().trim());
+
+                editedTask = new FixedTask(
+                        startTime,
+                        endTime,
+                        title,
+                        description,
+                        0.0,
+                        importance,
+                        taskDate
+                );
+
+            } else if (taskToEdit instanceof FlexibleTask) {
+                String hoursText = txtboxHours.getText().trim();
+
+                if (hoursText.isEmpty()) {
+                    throw new IllegalArgumentException(
+                            "Please enter the number of working hours.");
+                }
+
+                double hours = Double.parseDouble(hoursText);
+
+                if (hours <= 0) {
+                    throw new IllegalArgumentException(
+                            "Working hours must be greater than zero.");
+                }
+
+                String workTimeText = txtboxFlexTime.getText().trim();
+                LocalTime workStartTime = workTimeText.isEmpty()
+                        ? null : LocalTime.parse(workTimeText);
+
+                editedTask = new FlexibleTask(
+                        title,
+                        description,
+                        hours,
+                        importance,
+                        taskDate,
+                        workStartTime
+                );
+
+            } else {
+                throw new IllegalArgumentException("Unknown task type.");
             }
+
+            // Update MySQL and replace the old task in TaskManager.
+            taskManager.updateTask(taskToEdit, editedTask);
+
+            javax.swing.JOptionPane.showMessageDialog(
+                    this,
+                    "Task updated successfully!",
+                    "Success",
+                    javax.swing.JOptionPane.INFORMATION_MESSAGE
+            );
+
+            parentDashboard.refreshDashboard();
+            parentDashboard.setVisible(true);
             this.dispose();
 
         } catch (java.time.format.DateTimeParseException e) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Please enter valid dates (YYYY-MM-DD) or times in HH:mm format.", "Format Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            javax.swing.JOptionPane.showMessageDialog(
+                    this,
+                    "Please enter the date as YYYY-MM-DD "
+                    + "and times as HH:mm.",
+                    "Format Error",
+                    javax.swing.JOptionPane.ERROR_MESSAGE);
+
         } catch (NumberFormatException e) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Please enter a valid number for working hours.", "Input Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            javax.swing.JOptionPane.showMessageDialog(
+                    this,
+                    "Please enter a valid number for working hours.",
+                    "Input Error",
+                    javax.swing.JOptionPane.ERROR_MESSAGE);
+
         } catch (IllegalArgumentException e) {
-            javax.swing.JOptionPane.showMessageDialog(this, e.getMessage(), "Validation Error", javax.swing.JOptionPane.WARNING_MESSAGE);
+            javax.swing.JOptionPane.showMessageDialog(
+                    this,
+                    e.getMessage(),
+                    "Validation Error",
+                    javax.swing.JOptionPane.ERROR_MESSAGE);
+
+        } catch (IllegalStateException e) {
+            javax.swing.JOptionPane.showMessageDialog(
+                    this,
+                    "Could not update task. Please check your database connection.",
+                    "Database Error",
+                    javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnSaveActionPerformed
 
