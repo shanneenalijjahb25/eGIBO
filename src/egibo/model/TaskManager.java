@@ -93,6 +93,32 @@ public class TaskManager {
             }
         }
     }
+    
+        public void updateTask(Task originalTask, Task editedTask) {
+        int index = tasks.indexOf(originalTask);
+
+        if (index == -1) {
+            throw new IllegalArgumentException("Task not found.");
+        }
+
+        // Preserve the original task's ID and status.
+        editedTask.setTaskId(originalTask.getTaskId());
+        editedTask.setStatus(originalTask.getStatus());
+
+        if (userId > 0) {
+            try {
+                if (!taskDAO.updateTask(userId, editedTask)) {
+                    throw new SQLException("Task was not updated.");
+                }
+            } catch (SQLException e) {
+                throw new IllegalStateException(
+                        "Could not update task in the database.", e);
+            }
+        }
+
+        // Replace the old task in the in-memory list.
+        tasks.set(index, editedTask);
+    }
 
     public void removeTask(Task task) {
         if (!tasks.contains(task)) {
