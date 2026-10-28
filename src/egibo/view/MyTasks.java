@@ -144,29 +144,30 @@ public class MyTasks extends javax.swing.JFrame {
 
         // --- Mark Done Action ---
         btnMarkDone.addActionListener(e -> {
-        int selectedRow = tblTasks.getSelectedRow();
-    if (selectedRow != -1) {
-        int modelRow = tblTasks.convertRowIndexToModel(selectedRow);
-        
-        // 1. Retrieve the selected Task from taskManager
-        egibo.model.Task task = taskManager.getAllTasks().get(modelRow);
-        
-        // 2. Update status directly on the Task instance
-        // (Use whichever method name your Task class uses, e.g., setStatus or markCompleted)
-        task.setStatus(Status.DONE); 
-        
-        // 3. Refresh both views so changes reflect everywhere immediately
-        refreshTableData();
-        if (parentDashboard != null) {
-            parentDashboard.refreshDashboard();
-        }
-    } else {
-        javax.swing.JOptionPane.showMessageDialog(
-            this, 
-            "Please select a task from the table first.", 
-            "Selection Required", 
-            javax.swing.JOptionPane.WARNING_MESSAGE
-        );
+            int selectedRow = tblTasks.getSelectedRow();
+            if (selectedRow != -1) {
+                int modelRow = tblTasks.convertRowIndexToModel(selectedRow);
+                Task task = taskManager.getAllTasks().get(modelRow);
+                
+                // Toggle status: if it's already DONE, make it PENDING. Otherwise, make it DONE.
+                if (task.getStatus() == Status.DONE) {
+                    task.setStatus(Status.PENDING);
+                } else {
+                    task.setStatus(Status.DONE);
+                }
+                
+                // Refresh both views
+                refreshTableData();
+                if (parentDashboard != null) {
+                    parentDashboard.refreshDashboard();
+                }
+            } else {
+                javax.swing.JOptionPane.showMessageDialog(
+                    this, 
+                    "Please select a task from the table first.", 
+                    "Selection Required", 
+                    javax.swing.JOptionPane.WARNING_MESSAGE
+                );
     }
     });
 
@@ -231,16 +232,26 @@ public class MyTasks extends javax.swing.JFrame {
         }
 
         // 2. Status filter
+        // 2. Status filter: Matches Status column (Column 4)
         if (!statusFilter.equals("All Statuses")) {
-            filters.add(RowFilter.regexFilter("^" + statusFilter + "$", 4)); // Column 4 (Status)
+            filters.add(RowFilter.regexFilter("(?i)" + statusFilter, 4));
         }
 
-        // 3. Priority filter
+        // 3. Priority filter: Maps dropdown choices to your numeric importance column (Column 3)
         if (!priorityFilter.equals("All Priorities")) {
-            // Priority numbers are 1-5 or strings. Match exact priority prefix digits if needed.
-            filters.add(RowFilter.regexFilter("^" + priorityFilter.charAt(0), 3)); // Column 3 (Priority)
+            if (priorityFilter.equalsIgnoreCase("High")) {
+                // Matches high importance values (4 or 5)
+                filters.add(RowFilter.regexFilter("^[45]$", 3));
+            } else if (priorityFilter.equalsIgnoreCase("Medium")) {
+                // Matches normal/medium importance value (3)
+                filters.add(RowFilter.regexFilter("^3$", 3));
+            } else if (priorityFilter.equalsIgnoreCase("Low")) {
+                // Matches low/minor importance values (1 or 2)
+                filters.add(RowFilter.regexFilter("^[12]$", 3));
+            }
         }
 
+        // Apply filters or clear them if none are active
         if (filters.isEmpty()) {
             rowSorter.setRowFilter(null);
         } else {
