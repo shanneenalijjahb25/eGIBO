@@ -167,7 +167,32 @@ public class TaskManager {
     }
 
     public List<Task> getAllTasks() {
-        return new ArrayList<>(tasks);
+        List<Task> sortedList = new ArrayList<>(tasks);
+    java.time.LocalDate today = java.time.LocalDate.now();
+
+    // 1. Automatically update status to OVERDUE for past pending tasks
+    for (Task t : sortedList) {
+        if (t.getStatus() != Status.DONE && t.getDueDate() != null && t.getDueDate().isBefore(today)) {
+            t.setStatus(Status.OVERDUE);
+        }
+    }
+
+    // 2. Sort: OVERDUE tasks first, then by due date
+    sortedList.sort((t1, t2) -> {
+        boolean t1Overdue = (t1.getStatus() == Status.OVERDUE);
+        boolean t2Overdue = (t2.getStatus() == Status.OVERDUE);
+
+        if (t1Overdue && !t2Overdue) return -1; // Move t1 up
+        if (!t1Overdue && t2Overdue) return 1;  // Move t2 up
+
+        // Secondary sort by due date (earlier dates first)
+        if (t1.getDueDate() != null && t2.getDueDate() != null) {
+            return t1.getDueDate().compareTo(t2.getDueDate());
+        }
+        return 0;
+    });
+
+    return sortedList;
     }
 
     public List<Task> getPendingTasks() {

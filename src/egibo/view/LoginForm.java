@@ -75,7 +75,7 @@ public class LoginForm extends javax.swing.JFrame {
                     if (capacity < 0) {
                         javax.swing.JOptionPane.showMessageDialog(
                             LoginForm.this,
-                            "Invalid username or password.",
+                            "Unable to identify your account.",
                             "Login Failed",
                             javax.swing.JOptionPane.WARNING_MESSAGE
                         );

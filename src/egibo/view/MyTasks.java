@@ -69,8 +69,15 @@ public class MyTasks extends javax.swing.JFrame {
     private void refreshTableData() {
         tableModel.setRowCount(0); // Clear old rows
         List<Task> tasks = taskManager.getAllTasks();
+        java.time.LocalDate today = java.time.LocalDate.now();
 
         for (Task t : tasks) {
+            Status displayStatus = t.getStatus();
+            
+            // If it's not done and the due date has passed, flag it as OVERDUE
+            if (t.getStatus() != Status.DONE && t.getDueDate() != null && t.getDueDate().isBefore(today)) {
+                displayStatus = Status.OVERDUE; 
+            }
             Object[] rowData = {
                 t.getTitle(),
                 t.getDueDate(),
@@ -335,7 +342,7 @@ public class MyTasks extends javax.swing.JFrame {
 
         cmbPriority.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "All Priorities", "Low", "Medium", "High" }));
 
-        cmbStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "All Statuses", "Pending", "Completed" }));
+        cmbStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "All Statuses", "Pending", "Completed", "Overdue" }));
 
         scrollTasks.setViewportBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
 
@@ -371,21 +378,20 @@ public class MyTasks extends javax.swing.JFrame {
                         .addComponent(cmbStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(cmbPriority, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(pnlMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(pnlMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(lblMyTasks)
-                        .addComponent(lblSubtitle, javax.swing.GroupLayout.PREFERRED_SIZE, 233, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(pnlMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, pnlMainLayout.createSequentialGroup()
-                                .addComponent(lblTaskCount, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnAddTask, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(29, 29, 29)
-                                .addComponent(btnEditTask, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(104, 104, 104)
-                                .addComponent(btnMarkDone, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(4, 4, 4)
-                                .addComponent(btnDeleteTask, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(scrollTasks, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 864, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGroup(pnlMainLayout.createSequentialGroup()
+                            .addComponent(lblTaskCount, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(btnAddTask, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(29, 29, 29)
+                            .addComponent(btnEditTask, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(104, 104, 104)
+                            .addComponent(btnMarkDone, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(4, 4, 4)
+                            .addComponent(btnDeleteTask, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(scrollTasks, javax.swing.GroupLayout.PREFERRED_SIZE, 864, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lblSubtitle)))
                 .addContainerGap(29, Short.MAX_VALUE))
         );
         pnlMainLayout.setVerticalGroup(

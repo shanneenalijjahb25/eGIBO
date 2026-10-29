@@ -5,5 +5,5 @@
 package egibo.model;
 
 public enum Status {
-    PENDING, DONE
+    PENDING, DONE, OVERDUE
 }

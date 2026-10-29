@@ -437,9 +437,8 @@ public class AddTaskForm extends javax.swing.JFrame {
             String title = txtboxTitle.getText().trim();
             String description = txtboxDescription.getText().trim();
             
-            if (title.isEmpty()) {
-                javax.swing.JOptionPane.showMessageDialog(this, "Please enter a task title.", "Validation Error", javax.swing.JOptionPane.WARNING_MESSAGE);
-                return;
+            if (title.isEmpty() || title.equalsIgnoreCase("Title...") || title.equalsIgnoreCase("Task Title")) {
+            title = "Untitled Task";
             }
 
             // Priority Extraction
@@ -467,6 +466,15 @@ public class AddTaskForm extends javax.swing.JFrame {
             }
 
             boolean hasConflict = false;
+            
+            // Check if the parsed task date is in the past
+            if (taskDate != null && taskDate.isBefore(LocalDate.now())) {
+                javax.swing.JOptionPane.showMessageDialog(this, 
+                    "Due date cannot be in the past! Please select today or a future date.", 
+                    "Invalid Due Date", 
+                    javax.swing.JOptionPane.WARNING_MESSAGE);
+                return; // Stops saving/adding
+            }
 
             if (rbFixedTask.isSelected()) {
                 LocalTime startTime = LocalTime.parse(txtboxStartTime.getText().trim()); 

@@ -24,6 +24,7 @@ public class Dashboard extends javax.swing.JFrame {
         this.studentProfile = studentProfile;
         this.taskManager = taskManager;
         initComponents();
+        
         btnMyTasks.addActionListener(e -> {
             MyTasks myTasksWindow = new MyTasks(this, taskManager);
             myTasksWindow.setVisible(true);
@@ -31,6 +32,13 @@ public class Dashboard extends javax.swing.JFrame {
         });
         setLocationRelativeTo(null);
         refreshDashboard(); // Populates tables, labels, and user name on load
+        
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowGainedFocus(java.awt.event.WindowEvent evt) {
+                refreshDashboard();
+            }
+        });
     }
     
     public void refreshDashboard() {
@@ -65,7 +73,7 @@ public class Dashboard extends javax.swing.JFrame {
     javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) tblTasks.getModel();
     model.setRowCount(0); // Clear existing rows
 
-    for (egibo.model.Task t : taskManager.getRankedTasks()) {
+    for (egibo.model.Task t : taskManager.getAllTasks()) {
         model.addRow(new Object[]{
             t.getTitle(),
             t.getTypeLabel(),
