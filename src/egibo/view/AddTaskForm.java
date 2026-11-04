@@ -491,7 +491,7 @@ public class AddTaskForm extends javax.swing.JFrame {
                 );
                 
                 // Polymorphic conflict check
-                for (egibo.model.Task existingTask : taskManager.getPendingTasks()) {
+                for (egibo.model.Task existingTask : taskManager.getTasksForToday()) {
                     if (existingTask.occupiesTime(newTask)) {
                         hasConflict = true;  
                         break;
@@ -524,7 +524,7 @@ public class AddTaskForm extends javax.swing.JFrame {
                 );
                 
                 // Run the conflict check against pending tasks
-                for (egibo.model.Task existingTask : taskManager.getPendingTasks()) {
+                for (egibo.model.Task existingTask : taskManager.getTasksForToday()) {
                     if (existingTask.occupiesTime(newTask)) {
                         hasConflict = true;
                         break;

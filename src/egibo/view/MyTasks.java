@@ -212,11 +212,13 @@ public class MyTasks extends javax.swing.JFrame {
                 return;
             }
 
-            // 2. Retrieve the actual Task object corresponding to that row from your TaskManager / Table Model
-            // (Assuming your table maps directly to your pending/all tasks list)
-            egibo.model.Task selectedTask = taskManager.getPendingTasks().get(selectedRow); 
+            // Convert JTable view index to model index in case filters/sorting are active
+            int modelRow = tblTasks.convertRowIndexToModel(selectedRow);
+            
+            // Get the task directly from today's list (or whatever date is active)
+            egibo.model.Task selectedTask = taskManager.getTasksForToday().get(modelRow); 
 
-            // 3. Open the EditTaskForm and pass the selected task along
+            // Open the EditTaskForm and pass the selected task along
             EditTaskForm editForm = new EditTaskForm(parentDashboard, taskManager, selectedTask);
             editForm.setVisible(true);
         });

@@ -194,45 +194,59 @@ public class TaskManager {
 
     return sortedList;
     }
-
-    public List<Task> getPendingTasks() {
-        List<Task> result = new ArrayList<>();
-
-        for (Task task : tasks) {
-            if (task.getStatus() == Status.PENDING) {
-                result.add(task);
+    
+    public List<Task> getTasksForDate(LocalDate date) {
+        List<Task> dailyList = new ArrayList<>();
+        for (Task t : tasks) {
+            if (t.getDueDate() != null && t.getDueDate().equals(date)) {
+                dailyList.add(t);
             }
         }
-
-        return result;
+        return dailyList;
+    }
+    
+    public List<Task> getTasksForToday() {
+        return getTasksForDate(LocalDate.now());
     }
 
-    public List<Task> getFinishedTasks() {
-        List<Task> result = new ArrayList<>();
-
-        for (Task task : tasks) {
-            if (task.getStatus() == Status.DONE) {
-                result.add(task);
-            }
-        }
-
-        return result;
-    }
-
-    public List<Task> getRankedTasks() {
-        List<Task> sorted = new ArrayList<>(tasks);
+    public List<Task> getRankedTasksForToday() {
+        List<Task> sorted = getTasksForToday();
         Collections.sort(sorted, RANK);
         return sorted;
     }
-
-    public double getTotalRemainingHours() {
+    
+    public double getTotalRemainingHoursForToday() {
         double total = 0.0;
-
+        LocalDate today = LocalDate.now();
         for (Task task : tasks) {
-            total += task.getRemainingHours();
+            if (task.getDueDate() != null && task.getDueDate().equals(today)) {
+                total += task.getRemainingHours();
+            }
         }
-
         return total;
     }
+    
+    public int getPendingCountForToday() {
+        int count = 0;
+        LocalDate today = LocalDate.now();
+        for (Task task : tasks) {
+            if (task.getDueDate() != null && task.getDueDate().equals(today) && task.getStatus() == Status.PENDING) {
+                count++;
+            }
+        }
+        return count;
+    }
+    
+    public int getCompletedCountForToday() {
+        int count = 0;
+        LocalDate today = LocalDate.now();
+        for (Task task : tasks) {
+            if (task.getDueDate() != null && task.getDueDate().equals(today) && task.getStatus() == Status.DONE) {
+                count++;
+            }
+        }
+        return count;
+    }
+    
 }
 

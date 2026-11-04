@@ -48,9 +48,9 @@ public class Dashboard extends javax.swing.JFrame {
     lblDate.setText(java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("EEEE, MMM d, yyyy")));
 
     // 2. Top Metric Cards
-    int pendingCount = taskManager.getPendingTasks().size();
-    int completedCount = taskManager.getFinishedTasks().size();
-    double totalHours = taskManager.getTotalRemainingHours();
+    int pendingCount = taskManager.getPendingCountForToday();
+    int completedCount = taskManager.getCompletedCountForToday();
+    double totalHours = taskManager.getTotalRemainingHoursForToday();
     double capacity = studentProfile.dailyCapacity();
 
     // Push values to JLabels
@@ -66,7 +66,7 @@ public class Dashboard extends javax.swing.JFrame {
     javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) tblTasks.getModel();
     model.setRowCount(0); // Clear existing rows
 
-    for (egibo.model.Task t : taskManager.getAllTasks()) {
+    for (egibo.model.Task t : taskManager.getRankedTasksForToday()) {
         model.addRow(new Object[]{
             t.getTitle(),
             t.getTypeLabel(),
