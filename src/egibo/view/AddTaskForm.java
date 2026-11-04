@@ -493,7 +493,7 @@ public class AddTaskForm extends javax.swing.JFrame {
                 // Polymorphic conflict check
                 for (egibo.model.Task existingTask : taskManager.getPendingTasks()) {
                     if (existingTask.occupiesTime(newTask)) {
-                        hasConflict = true;
+                        hasConflict = true;  
                         break;
                     }
                 }

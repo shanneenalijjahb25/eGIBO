@@ -11,7 +11,7 @@ public class FlexibleTask extends Task{
 
     private LocalTime workStartTime;
 
-    // Updated constructor to accept the new scheduled working time
+    
     public FlexibleTask(String title, String description, double hours, int importance, LocalDate dueDate, LocalTime workStartTime) {
         super(title, description, hours, importance, dueDate);
         this.workStartTime = workStartTime;

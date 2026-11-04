@@ -159,38 +159,37 @@ public class LoginForm extends javax.swing.JFrame {
                 return;
                 }
 
-            double dailyCapacity;
+            double dailyCapacity = Double.parseDouble(capacityText);;
 
             try {
-                dailyCapacity = Double.parseDouble(capacityText);
+
+                // 2. CREATE THE MODEL OBJECT! 
+                // This instantly triggers the defensive checks inside StudentProfile.java
+                egibo.model.StudentProfile studentProfile = new egibo.model.StudentProfile(username, dailyCapacity);
+                egibo.model.TaskManager taskManager = new egibo.model.TaskManager();
+
+                // 3. Launch Dashboard and close login
+                Dashboard dashboard = new Dashboard(studentProfile, taskManager);
+                dashboard.setVisible(true);
+                LoginForm.this.dispose();
+
             } catch (NumberFormatException ex) {
+                // Handles typing letters instead of numbers (e.g., "abc")
                 javax.swing.JOptionPane.showMessageDialog(
                     LoginForm.this,
                     "Please enter a valid number for work capacity.",
                     "Format Error",
                     javax.swing.JOptionPane.ERROR_MESSAGE
                 );
-                return;
-            }
-
-            if (!Double.isFinite(dailyCapacity) || dailyCapacity <= 0.0) {
+            } catch (IllegalArgumentException ex) {
+                // THIS GRABS THE EXCEPTION THROWN BY StudentProfile.java! 
+                // Whether it's <= 0 or > 16, StudentProfile throws it, and the dialog shows it automatically.
                 javax.swing.JOptionPane.showMessageDialog(
                     LoginForm.this,
-                    "Your capacity must be greater than 0 hours.",
+                    ex.getMessage(),
                     "Invalid Capacity",
                     javax.swing.JOptionPane.WARNING_MESSAGE
                 );
-                return;
-            }
-
-            if (dailyCapacity > 16.0) {
-                javax.swing.JOptionPane.showMessageDialog(
-                    LoginForm.this,
-                    "Your capacity cannot be more than 16 hours.",
-                    "Capacity Too High",
-                    javax.swing.JOptionPane.ERROR_MESSAGE
-                );
-                return;
             }
 
             try {

@@ -59,14 +59,7 @@ public class Dashboard extends javax.swing.JFrame {
     lblCapacityMetric.setText(totalHours + " / " + capacity + " hrs");
     
     // Workload Riskevaluation
-    String risk = "Low";
-    if (totalHours > capacity) {
-        risk = "Overloaded! ⚠️";
-    } else if (totalHours >= capacity * 0.8) {
-        risk = "High";
-    } else if (totalHours >= capacity * 0.5) {
-        risk = "Moderate";
-    }
+    String risk = egibo.model.WorkloadAnalyzer.evaluateRisk(totalHours, capacity);
     lblWorkloadRisk.setText(risk);
 
     // 3. Populate Table Task List using DefaultTableModel
@@ -84,8 +77,6 @@ public class Dashboard extends javax.swing.JFrame {
         });
     }
 }
-
-    
     
     /**
      * This method is called from within the constructor to initialize the form.
