@@ -11,6 +11,12 @@ import javax.swing.JOptionPane;
 import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Date;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerDateModel;
 
 public class MyTasks extends javax.swing.JFrame {
     
@@ -20,6 +26,15 @@ public class MyTasks extends javax.swing.JFrame {
     private TaskManager taskManager;
     private DefaultTableModel tableModel;
     private TableRowSorter<DefaultTableModel> rowSorter;
+    
+    private LocalDate selectedDate = LocalDate.now();
+    private LocalDate minDate;
+    private JSpinner spnDate;
+    private javax.swing.JButton btnPrevDay, btnNextDay;
+    private boolean updatingSpinner = false;
+
+    // Tasks currently shown in the table, in the same order as the model rows
+    private List<Task> displayedTasks = new ArrayList<>();
     
      public MyTasks() {
         this(null, new TaskManager());
@@ -54,6 +69,8 @@ public class MyTasks extends javax.swing.JFrame {
         rowSorter = new TableRowSorter<>(tableModel);
         tblTasks.setRowSorter(rowSorter);
 
+        setupDateNavigation();
+        
         // 2. Load data & wire listeners
         refreshTableData();
         setupCustomListeners();
@@ -66,36 +83,40 @@ public class MyTasks extends javax.swing.JFrame {
         });
     }
     
-    private void refreshTableData() {
-        tableModel.setRowCount(0); // Clear old rows
-        List<Task> tasks = taskManager.getAllTasks();
-        java.time.LocalDate today = java.time.LocalDate.now();
+        private void refreshTableData() {
+            tableModel.setRowCount(0);
+            displayedTasks = new ArrayList<>();
+            LocalDate today = LocalDate.now();
 
-        for (Task t : tasks) {
-            Status displayStatus = t.getStatus();
-            
-            // If it's not done and the due date has passed, flag it as OVERDUE
-            if (t.getStatus() != Status.DONE && t.getDueDate() != null && t.getDueDate().isBefore(today)) {
-                displayStatus = Status.OVERDUE; 
+            // All tasks for the chosen day, whether DONE or not
+            for (Task t : taskManager.getAllTasks()) {
+                if (selectedDate.equals(t.getDueDate())) {
+                    displayedTasks.add(t);
+                }
             }
-            Object[] rowData = {
-                t.getTitle(),
-                t.getDueDate(),
-                t.getHours(),
-                t.getImportance(),
-                t.getStatus(),
-                t.getDescription()
-            };
-            tableModel.addRow(rowData);
+
+            for (Task t : displayedTasks) {
+                Status displayStatus = t.getStatus();
+                if (t.getStatus() != Status.DONE && t.getDueDate() != null && t.getDueDate().isBefore(today)) {
+                    displayStatus = Status.OVERDUE;
+                }
+                tableModel.addRow(new Object[]{
+                    t.getTitle(), t.getDueDate(), t.getHours(),
+                    t.getImportance(), displayStatus, t.getDescription()
+                });
+            }
+            updateTaskCountLabel();
         }
 
-        updateTaskCountLabel();
-    }
-    
-    private void updateTaskCountLabel() {
-        int count = tblTasks.getRowCount();
-        lblTaskCount.setText("Showing " + count + " tasks");
-    }
+        private Task getSelectedTask() {
+            int viewRow = tblTasks.getSelectedRow();
+            if (viewRow == -1) return null;
+            return displayedTasks.get(tblTasks.convertRowIndexToModel(viewRow));
+        }       
+
+        private void updateTaskCountLabel() {
+            lblTaskCount.setText("Showing " + tblTasks.getRowCount() + " tasks for " + selectedDate);
+        }
     
         private void setupCustomListeners() {
         // --- Sidebar Navigation ---
@@ -149,83 +170,50 @@ public class MyTasks extends javax.swing.JFrame {
         cmbStatus.addActionListener(e -> applyFilters());
         cmbPriority.addActionListener(e -> applyFilters());
 
-        // --- Mark Done Action ---
+        // --- Mark Done ---
         btnMarkDone.addActionListener(e -> {
-            int selectedRow = tblTasks.getSelectedRow();
-            if (selectedRow != -1) {
-                int modelRow = tblTasks.convertRowIndexToModel(selectedRow);
-                Task task = taskManager.getAllTasks().get(modelRow);
-                
-                // Toggle status: if it's already DONE, make it PENDING. Otherwise, make it DONE.
-                if (task.getStatus() == Status.DONE) {
-                    task.setStatus(Status.PENDING);
-                } else {
-                    task.setStatus(Status.DONE);
-                }
-                
-                // Refresh both views
-                refreshTableData();
-                if (parentDashboard != null) {
-                    parentDashboard.refreshDashboard();
-                }
-            } else {
-                javax.swing.JOptionPane.showMessageDialog(
-                    this, 
-                    "Please select a task from the table first.", 
-                    "Selection Required", 
-                    javax.swing.JOptionPane.WARNING_MESSAGE
-                );
-    }
-    });
-
-        // --- Delete Task Action ---
-        btnDeleteTask.addActionListener(e -> {
-          int selectedRow = tblTasks.getSelectedRow();
-          if (selectedRow != -1) {
-              int modelRow = tblTasks.convertRowIndexToModel(selectedRow);
-              int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this task?", "Confirm Deletion", JOptionPane.YES_NO_OPTION);
-              if (confirm == JOptionPane.YES_OPTION) {
-                  // Fetch the actual Task object from taskManager using index
-                  Task taskToRemove = taskManager.getAllTasks().get(modelRow);
-                  taskManager.removeTask(taskToRemove); // Pass the Task object instead of modelRow
-
-                  refreshTableData();
-                  if (parentDashboard != null) parentDashboard.refreshDashboard();
-              }
-          } else {
-              JOptionPane.showMessageDialog(this, "Please select a task to delete.", "Selection Required", JOptionPane.WARNING_MESSAGE);
-          }
-      });
-
-        // --- Edit Task Action ---
-        btnEditTask.addActionListener(e -> {
-            // 1. Get the selected row index from your table
-            int selectedRow = tblTasks.getSelectedRow(); // Replace with your actual JTable variable name
-
-            if (selectedRow == -1) {
-                javax.swing.JOptionPane.showMessageDialog(
-                    this,
-                    "Please select a task from the table to edit.",
-                    "No Task Selected",
-                    javax.swing.JOptionPane.WARNING_MESSAGE
-                );
+            Task task = getSelectedTask();
+            if (task == null) {
+                JOptionPane.showMessageDialog(this, "Please select a task from the table first.",
+                        "Selection Required", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-
-            // Convert JTable view index to model index in case filters/sorting are active
-            int modelRow = tblTasks.convertRowIndexToModel(selectedRow);
-            
-            // Get the task directly from today's list (or whatever date is active)
-            egibo.model.Task selectedTask = taskManager.getTasksForToday().get(modelRow); 
-
-            // Open the EditTaskForm and pass the selected task along
-            EditTaskForm editForm = new EditTaskForm(parentDashboard, taskManager, selectedTask);
-            editForm.setVisible(true);
+            task.setStatus(task.getStatus() == Status.DONE ? Status.PENDING : Status.DONE);
+            refreshTableData();
+            if (parentDashboard != null) parentDashboard.refreshDashboard();
         });
-    }
+
+        // --- Delete ---
+        btnDeleteTask.addActionListener(e -> {
+            Task task = getSelectedTask();
+            if (task == null) {
+                JOptionPane.showMessageDialog(this, "Please select a task to delete.",
+                        "Selection Required", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this task?",
+                    "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                taskManager.removeTask(task);
+                refreshTableData();
+                if (parentDashboard != null) parentDashboard.refreshDashboard();
+            }
+        });
+
+        // --- Edit ---
+        btnEditTask.addActionListener(e -> {
+            Task task = getSelectedTask();
+            if (task == null) {
+                JOptionPane.showMessageDialog(this, "Please select a task from the table to edit.",
+                        "No Task Selected", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            new EditTaskForm(parentDashboard, taskManager, task).setVisible(true);
+            });
+        }
         
         private void applyFilters() {
-        String searchText = txtSearch.getText().trim();
+            String searchText = txtSearch.getText().trim();
         if (searchText.equals("Search tasks...")) {
             searchText = "";
         }
@@ -268,7 +256,68 @@ public class MyTasks extends javax.swing.JFrame {
         }
 
         updateTaskCountLabel();
-    }
+        }
+        private void setupDateNavigation() {
+            minDate = resolveAccountCreationDate();
+            if (selectedDate.isBefore(minDate)) selectedDate = minDate;
+
+            SpinnerDateModel model = new SpinnerDateModel(
+                    toDate(selectedDate), toDate(minDate), null, java.util.Calendar.DAY_OF_MONTH);
+            spnDate = new JSpinner(model);
+            spnDate.setEditor(new JSpinner.DateEditor(spnDate, "yyyy-MM-dd"));
+            spnDate.setPreferredSize(new java.awt.Dimension(110, 28));
+
+            btnPrevDay = new javax.swing.JButton("<");
+            btnNextDay = new javax.swing.JButton(">");
+            btnPrevDay.setPreferredSize(new java.awt.Dimension(45, 28));
+            btnNextDay.setPreferredSize(new java.awt.Dimension(45, 28));
+
+            pnlDateNav.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 6, 0));
+            pnlDateNav.add(btnPrevDay);
+            pnlDateNav.add(spnDate);
+            pnlDateNav.add(btnNextDay);
+
+            btnPrevDay.addActionListener(e -> setSelectedDate(selectedDate.minusDays(1)));
+            btnNextDay.addActionListener(e -> setSelectedDate(selectedDate.plusDays(1)));
+
+            spnDate.addChangeListener(e -> {
+                if (updatingSpinner) return;
+                selectedDate = toLocalDate((Date) spnDate.getValue());
+                refreshTableData();
+                updateNavButtons();
+            });
+
+            updateNavButtons();
+        }
+
+        private void setSelectedDate(LocalDate date) {
+            if (date.isBefore(minDate)) date = minDate;   // never go before account creation
+            selectedDate = date;
+
+            updatingSpinner = true;                        // avoid double refresh from the spinner listener
+            spnDate.setValue(toDate(date));
+            updatingSpinner = false;
+
+            refreshTableData();
+            updateNavButtons();
+        }
+
+        private void updateNavButtons() {
+            btnPrevDay.setEnabled(selectedDate.isAfter(minDate));
+        }
+
+        private LocalDate resolveAccountCreationDate() {
+            // TODO: return the logged-in user's real account_creation_date
+            return LocalDate.now().minusYears(1);   // placeholder
+        }
+
+        private Date toDate(LocalDate d) {
+            return Date.from(d.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        }
+
+        private LocalDate toLocalDate(Date d) {
+            return d.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -302,6 +351,7 @@ public class MyTasks extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         lblMyTasks1 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
+        pnlDateNav = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -495,6 +545,17 @@ public class MyTasks extends javax.swing.JFrame {
 
         jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/egibo/view/Screenshot 2026-10-22 210418.png"))); // NOI18N
 
+        javax.swing.GroupLayout pnlDateNavLayout = new javax.swing.GroupLayout(pnlDateNav);
+        pnlDateNav.setLayout(pnlDateNavLayout);
+        pnlDateNavLayout.setHorizontalGroup(
+            pnlDateNavLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 230, Short.MAX_VALUE)
+        );
+        pnlDateNavLayout.setVerticalGroup(
+            pnlDateNavLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 35, Short.MAX_VALUE)
+        );
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -506,18 +567,25 @@ public class MyTasks extends javax.swing.JFrame {
                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblMyTasks1)
-                .addContainerGap(644, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 359, Short.MAX_VALUE)
+                .addComponent(pnlDateNav, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addContainerGap(15, Short.MAX_VALUE)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel4)
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(lblMyTasks1)))
-                .addContainerGap())
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel4)
+                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(lblMyTasks1)))
+                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addComponent(pnlDateNav, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(25, 25, 25))))
         );
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -576,7 +644,7 @@ public class MyTasks extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(pnlMain, javax.swing.GroupLayout.PREFERRED_SIZE, 456, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(pnlSidebar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(16, Short.MAX_VALUE))
+                .addContainerGap(25, Short.MAX_VALUE))
         );
 
         pack();
@@ -647,6 +715,7 @@ public class MyTasks extends javax.swing.JFrame {
     private javax.swing.JLabel lblMyTasks1;
     private javax.swing.JLabel lblSubtitle;
     private javax.swing.JLabel lblTaskCount;
+    private javax.swing.JPanel pnlDateNav;
     private javax.swing.JPanel pnlMain;
     private javax.swing.JPanel pnlSidebar;
     private javax.swing.JScrollPane scrollTasks;
