@@ -17,10 +17,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
+import java.time.format.DateTimeFormatter;
+import java.util.regex.Pattern;
 
 public class MyTasks extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(MyTasks.class.getName());
+    
+    private static final DateTimeFormatter TS_FORMAT = DateTimeFormatter.ofPattern("MMM dd, yyyy hh:mm a");
+
+// Set to false if you still want Edit / Mark Done / Delete on past days
+private static final boolean READ_ONLY_PAST_DAYS = true;
     
     private Dashboard parentDashboard;
     private TaskManager taskManager;
@@ -52,7 +59,7 @@ public class MyTasks extends javax.swing.JFrame {
         this.taskManager = taskManager;
 
         // 1. Setup Table Columns (Including Description)
-        String[] columns = {"Task Title", "Due Date", "Hours", "Priority", "Status", "Description"};
+        String[] columns = {"Task Title", "Due Date", "Hours", "Priority", "Status", "Description", "Completed On"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -84,29 +91,31 @@ public class MyTasks extends javax.swing.JFrame {
     }
     
         private void refreshTableData() {
-            tableModel.setRowCount(0);
-            displayedTasks = new ArrayList<>();
-            LocalDate today = LocalDate.now();
+    tableModel.setRowCount(0);
+    displayedTasks = new ArrayList<>();
 
-            // All tasks for the chosen day, whether DONE or not
-            for (Task t : taskManager.getAllTasks()) {
-                if (selectedDate.equals(t.getDueDate())) {
-                    displayedTasks.add(t);
-                }
-            }
-
-            for (Task t : displayedTasks) {
-                Status displayStatus = t.getStatus();
-                if (t.getStatus() != Status.DONE && t.getDueDate() != null && t.getDueDate().isBefore(today)) {
-                    displayStatus = Status.OVERDUE;
-                }
-                tableModel.addRow(new Object[]{
-                    t.getTitle(), t.getDueDate(), t.getHours(),
-                    t.getImportance(), displayStatus, t.getDescription()
-                });
-            }
-            updateTaskCountLabel();
+    for (Task t : taskManager.getAllTasks()) {
+        if (selectedDate.equals(t.getDueDate())) {
+            displayedTasks.add(t);
         }
+    }
+
+    for (Task t : displayedTasks) {
+        String completedOn = t.getCompletedAt() != null ? t.getCompletedAt().format(TS_FORMAT) : "—";
+        tableModel.addRow(new Object[]{
+            t.getTitle(), t.getDueDate(), t.getHours(),
+            t.getImportance(), resolveDisplayStatus(t), t.getDescription(), completedOn
+        });
+    }
+    updateTaskCountLabel();
+}
+
+/** DONE stays DONE; anything not done on a past day is shown as OVERDUE (missed). */
+private Status resolveDisplayStatus(Task t) {
+    if (t.getStatus() == Status.DONE) return Status.DONE;
+    if (t.getDueDate() != null && t.getDueDate().isBefore(LocalDate.now())) return Status.OVERDUE;
+    return t.getStatus();
+}
 
         private Task getSelectedTask() {
             int viewRow = tblTasks.getSelectedRow();
@@ -210,7 +219,58 @@ public class MyTasks extends javax.swing.JFrame {
             }
             new EditTaskForm(parentDashboard, taskManager, task).setVisible(true);
             });
+        // --- Double-click: Task Detail Inspector ---
+tblTasks.addMouseListener(new java.awt.event.MouseAdapter() {
+    @Override
+    public void mouseClicked(java.awt.event.MouseEvent evt) {
+        if (evt.getClickCount() == 2 && javax.swing.SwingUtilities.isLeftMouseButton(evt)) {
+            int viewRow = tblTasks.rowAtPoint(evt.getPoint());
+            if (viewRow < 0) return; // clicked empty space
+            tblTasks.setRowSelectionInterval(viewRow, viewRow);
+            Task task = getSelectedTask();
+            if (task != null) showTaskDetails(task);
         }
+    }
+});
+        }
+        
+        private void showTaskDetails(Task task) {
+    String assigned = task.getDueDate() != null ? task.getDueDate().toString() : "—";
+    String created  = task.getCreatedAt() != null ? task.getCreatedAt().format(TS_FORMAT) : "—";
+
+    String completion;
+    if (task.getStatus() == Status.DONE && task.getCompletedAt() != null) {
+        completion = "✔ " + task.getCompletedAt().format(TS_FORMAT);
+    } else if (task.getStatus() == Status.DONE) {
+        completion = "✔ Done (no timestamp recorded)";
+    } else if (task.getDueDate() != null && task.getDueDate().isBefore(LocalDate.now())) {
+        completion = "✖ UNACCOMPLISHED (missed)";
+    } else {
+        completion = "✖ UNACCOMPLISHED (still pending)";
+    }
+
+    String desc = (task.getDescription() == null || task.getDescription().isBlank())
+            ? "(no description)" : task.getDescription();
+
+    String text = "Title:  " + task.getTitle() + "\n\n"
+                + "Description:\n" + desc + "\n\n"
+                + "Assigned Date:  " + assigned + "\n"
+                + "Created:  " + created + "\n"
+                + "Completed:  " + completion;
+
+    javax.swing.JTextArea area = new javax.swing.JTextArea(text);
+    area.setEditable(false);
+    area.setLineWrap(true);
+    area.setWrapStyleWord(true);
+    area.setOpaque(false);
+    area.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 14));
+
+    javax.swing.JScrollPane pane = new javax.swing.JScrollPane(area);
+    pane.setBorder(null);
+    pane.setPreferredSize(new java.awt.Dimension(380, 230));
+
+    JOptionPane.showMessageDialog(this, pane, "Task Details", JOptionPane.INFORMATION_MESSAGE);
+}
         
         private void applyFilters() {
             String searchText = txtSearch.getText().trim();
@@ -225,14 +285,15 @@ public class MyTasks extends javax.swing.JFrame {
 
         // 1. Search filter (matches Title or Description)
         if (!searchText.isEmpty()) {
-            filters.add(RowFilter.regexFilter("(?i)" + searchText, 0, 5)); // Column 0 (Title) and 5 (Description)
+            filters.add(RowFilter.regexFilter("(?i)" + Pattern.quote(searchText), 0, 5));
         }
 
         // 2. Status filter
         // 2. Status filter: Matches Status column (Column 4)
         if (!statusFilter.equals("All Statuses")) {
-            filters.add(RowFilter.regexFilter("(?i)" + statusFilter, 4));
-        }
+    String match = statusFilter.equals("Completed") ? "DONE" : statusFilter;
+    filters.add(RowFilter.regexFilter("(?i)^" + match + "$", 4));
+}
 
         // 3. Priority filter: Maps dropdown choices to your numeric importance column (Column 3)
         if (!priorityFilter.equals("All Priorities")) {
@@ -303,8 +364,14 @@ public class MyTasks extends javax.swing.JFrame {
         }
 
         private void updateNavButtons() {
-            btnPrevDay.setEnabled(selectedDate.isAfter(minDate));
-        }
+    btnPrevDay.setEnabled(selectedDate.isAfter(minDate));
+
+    // Past days are a read-only audit trail (double-click inspection still works)
+    boolean editable = !READ_ONLY_PAST_DAYS || !selectedDate.isBefore(LocalDate.now());
+    btnMarkDone.setEnabled(editable);
+    btnEditTask.setEnabled(editable);
+    btnDeleteTask.setEnabled(editable);
+}
 
         private LocalDate resolveAccountCreationDate() {
             // TODO: return the logged-in user's real account_creation_date
