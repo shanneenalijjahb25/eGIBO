@@ -12,6 +12,7 @@ public class SplashScreen extends javax.swing.JFrame {
     
     public SplashScreen() {
         initComponents();
+        this.getRootPane().setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 102, 102), 2));
         setLocationRelativeTo(null);
 
         Timer timer = new Timer(2500, e -> {
