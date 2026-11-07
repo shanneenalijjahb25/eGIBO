@@ -140,7 +140,7 @@ public class LoginForm extends javax.swing.JFrame {
         // Register Submit (Validates fields and opens dashboard like usual)
         btnRegisterEnter.addActionListener(new java.awt.event.ActionListener() {
             @Override
-                public void actionPerformed(java.awt.event.ActionEvent e) {
+            public void actionPerformed(java.awt.event.ActionEvent e) {
                 String username = txtUsername1.getText().trim();
                 String password = new String(jPasswordField2.getPassword());
                 String capacityText = txtboxHours.getText().trim();
@@ -162,18 +162,9 @@ public class LoginForm extends javax.swing.JFrame {
             double dailyCapacity = Double.parseDouble(capacityText);;
 
             try {
-
-                // 2. CREATE THE MODEL OBJECT! 
-                // This instantly triggers the defensive checks inside StudentProfile.java
-                egibo.model.StudentProfile studentProfile = new egibo.model.StudentProfile(username, dailyCapacity);
-                egibo.model.TaskManager taskManager = new egibo.model.TaskManager();
-
-                // 3. Launch Dashboard and close login
-                Dashboard dashboard = new Dashboard(studentProfile, taskManager);
-                dashboard.setVisible(true);
-                LoginForm.this.dispose();
-
-            } catch (NumberFormatException ex) {
+                dailyCapacity = Double.parseDouble(capacityText);
+            } 
+            catch (NumberFormatException ex) {
                 // Handles typing letters instead of numbers (e.g., "abc")
                 javax.swing.JOptionPane.showMessageDialog(
                     LoginForm.this,
@@ -193,6 +184,9 @@ public class LoginForm extends javax.swing.JFrame {
             }
 
             try {
+                // 1. Validate via StudentProfile defensive checks
+                egibo.model.StudentProfile studentProfile = new egibo.model.StudentProfile(username, dailyCapacity); 
+                
                 egibo.database.UserDAO userDAO =
                     new egibo.database.UserDAO();
 
@@ -216,22 +210,20 @@ public class LoginForm extends javax.swing.JFrame {
                     javax.swing.JOptionPane.INFORMATION_MESSAGE
                 );
 
-                // Return to the Login card instead of opening Dashboard.
-                java.awt.CardLayout cardLayout =
-                    (java.awt.CardLayout) cardContainerPanel.getLayout();
+                int userId = userDAO.getUserId(username);
+                
+                egibo.model.TaskManager taskManager;
+                try {
+                    taskManager = new egibo.model.TaskManager(userId);
+                } catch (java.sql.SQLException sqlEx) {
+                    taskManager = new egibo.model.TaskManager(); // Fallback empty task manager if needed
+                }
 
-                cardLayout.show(cardContainerPanel, "loginCard");
-
-                // Pre-fill the login username.
-                txtUsername.setText(username);
-
-                // Clear registration fields.
-                txtUsername1.setText("");
-                jPasswordField2.setText("");
-                txtboxHours.setText("");
-
-                jPasswordField1.requestFocusInWindow();
-
+                //Launch the Dashboard and close the login window
+                Dashboard dashboard = new Dashboard(studentProfile, taskManager);
+                dashboard.setVisible(true);
+                LoginForm.this.dispose();
+                
             } catch (java.sql.SQLException ex) {
                 if ("23000".equals(ex.getSQLState())) {
                     javax.swing.JOptionPane.showMessageDialog(
@@ -384,11 +376,11 @@ public class LoginForm extends javax.swing.JFrame {
                 .addGroup(loginCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblPassword))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addGroup(loginCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnLoginEnter, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnBackFromLogin))
-                .addContainerGap(42, Short.MAX_VALUE))
+                .addContainerGap(36, Short.MAX_VALUE))
         );
 
         lblUsername.getAccessibleContext().setAccessibleName("txtName");
@@ -488,24 +480,24 @@ public class LoginForm extends javax.swing.JFrame {
         titlePanel.setLayout(titlePanelLayout);
         titlePanelLayout.setHorizontalGroup(
             titlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, titlePanelLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jLabel8)
+                .addGap(40, 40, 40))
             .addGroup(titlePanelLayout.createSequentialGroup()
                 .addGroup(titlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(titlePanelLayout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(cardContainerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(titlePanelLayout.createSequentialGroup()
-                        .addGap(61, 61, 61)
+                        .addGap(75, 75, 75)
                         .addComponent(jLabel3)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, titlePanelLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jLabel8)
-                .addGap(39, 39, 39))
         );
         titlePanelLayout.setVerticalGroup(
             titlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(titlePanelLayout.createSequentialGroup()
-                .addGap(12, 12, 12)
+                .addGap(18, 18, 18)
                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel8)

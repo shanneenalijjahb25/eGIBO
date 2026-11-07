@@ -71,7 +71,43 @@ private static final boolean READ_ONLY_PAST_DAYS = true;
         tblTasks.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tblTasks.setRowHeight(28);
         tblTasks.setFillsViewportHeight(true);
+        
+        tblTasks.getTableHeader().putClientProperty("Table.isFileList", Boolean.TRUE);
+        
+        javax.swing.UIDefaults defaults = new javax.swing.UIDefaults();
+        defaults.put("TableHeader:\"TableHeader.renderer\"[Enabled].background", new java.awt.Color(0, 102, 102));
+        tblTasks.getTableHeader().putClientProperty("Nimbus.Overrides", defaults);
+        tblTasks.getTableHeader().putClientProperty("Nimbus.Overrides.InheritDefaults", true);
+        
+        tblTasks.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+        
+        // Set a custom cell renderer for the Description column (assuming it's column index 5)
+        int descriptionColumnIndex = 5; 
+        tblTasks.getColumnModel().getColumn(descriptionColumnIndex).setCellRenderer(new javax.swing.table.DefaultTableCellRenderer() {
+            @Override
+            public java.awt.Component getTableCellRendererComponent(
+                    javax.swing.JTable table, Object value, boolean isSelected, 
+                    boolean hasFocus, int row, int column) {
 
+                javax.swing.JLabel c = (javax.swing.JLabel) super.getTableCellRendererComponent(
+                        table, value, isSelected, hasFocus, row, column);
+
+                // Wrap text cleanly using HTML if descriptions get long
+                if (value != null) {
+                    String text = value.toString();
+                    if (text.length() > 40) { // Wrap if text is long
+                        c.setText("<html><div style='width: 200px;'>" + text + "</div></html>");
+                    } else {
+                        c.setText(text);
+                    }
+                }
+                return c;
+            }
+        });
+        
+        // Give the Description column a flexible initial preferred width
+        tblTasks.getColumnModel().getColumn(descriptionColumnIndex).setPreferredWidth(220);
+        
         // Setup row sorter for filtering
         rowSorter = new TableRowSorter<>(tableModel);
         tblTasks.setRowSorter(rowSorter);
@@ -220,80 +256,80 @@ private Status resolveDisplayStatus(Task t) {
             new EditTaskForm(parentDashboard, taskManager, task).setVisible(true);
             });
         // --- Double-click: Task Detail Inspector ---
-tblTasks.addMouseListener(new java.awt.event.MouseAdapter() {
-    @Override
-    public void mouseClicked(java.awt.event.MouseEvent evt) {
-        if (evt.getClickCount() == 2 && javax.swing.SwingUtilities.isLeftMouseButton(evt)) {
-            int viewRow = tblTasks.rowAtPoint(evt.getPoint());
-            if (viewRow < 0) return; // clicked empty space
-            tblTasks.setRowSelectionInterval(viewRow, viewRow);
-            Task task = getSelectedTask();
-            if (task != null) showTaskDetails(task);
-        }
-    }
-});
+        tblTasks.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                if (evt.getClickCount() == 2 && javax.swing.SwingUtilities.isLeftMouseButton(evt)) {
+                    int viewRow = tblTasks.rowAtPoint(evt.getPoint());
+                    if (viewRow < 0) return; // clicked empty space
+                    tblTasks.setRowSelectionInterval(viewRow, viewRow);
+                    Task task = getSelectedTask();
+                    if (task != null) showTaskDetails(task);
+                }
+            }
+        });
         }
         
         private void showTaskDetails(Task task) {
-    String assigned = task.getDueDate() != null ? task.getDueDate().toString() : "—";
-    String created  = task.getCreatedAt() != null ? task.getCreatedAt().format(TS_FORMAT) : "—";
+            String assigned = task.getDueDate() != null ? task.getDueDate().toString() : "—";
+            String created  = task.getCreatedAt() != null ? task.getCreatedAt().format(TS_FORMAT) : "—";
 
-    String completion;
-    if (task.getStatus() == Status.DONE && task.getCompletedAt() != null) {
-        completion = "✔ " + task.getCompletedAt().format(TS_FORMAT);
-    } else if (task.getStatus() == Status.DONE) {
-        completion = "✔ Done (no timestamp recorded)";
-    } else if (task.getDueDate() != null && task.getDueDate().isBefore(LocalDate.now())) {
-        completion = "✖ UNACCOMPLISHED (missed)";
-    } else {
-        completion = "✖ UNACCOMPLISHED (still pending)";
-    }
+            String completion;
+            if (task.getStatus() == Status.DONE && task.getCompletedAt() != null) {
+                completion = "✔ " + task.getCompletedAt().format(TS_FORMAT);
+            } else if (task.getStatus() == Status.DONE) {
+                completion = "✔ Done (no timestamp recorded)";
+            } else if (task.getDueDate() != null && task.getDueDate().isBefore(LocalDate.now())) {
+                completion = "✖ UNACCOMPLISHED (missed)";
+            } else {
+                completion = "✖ UNACCOMPLISHED (still pending)";
+            }
 
-    String desc = (task.getDescription() == null || task.getDescription().isBlank())
-            ? "(no description)" : task.getDescription();
+            String desc = (task.getDescription() == null || task.getDescription().isBlank())
+                    ? "(no description)" : task.getDescription();
 
-    String text = "Title:  " + task.getTitle() + "\n\n"
-                + "Description:\n" + desc + "\n\n"
-                + "Assigned Date:  " + assigned + "\n"
-                + "Created:  " + created + "\n"
-                + "Completed:  " + completion;
+            String text = "Title:  " + task.getTitle() + "\n\n"
+                        + "Description:\n" + desc + "\n\n"
+                        + "Assigned Date:  " + assigned + "\n"
+                        + "Created:  " + created + "\n"
+                        + "Completed:  " + completion;
 
-    javax.swing.JTextArea area = new javax.swing.JTextArea(text);
-    area.setEditable(false);
-    area.setLineWrap(true);
-    area.setWrapStyleWord(true);
-    area.setOpaque(false);
-    area.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 14));
+            javax.swing.JTextArea area = new javax.swing.JTextArea(text);
+            area.setEditable(false);
+            area.setLineWrap(true);
+            area.setWrapStyleWord(true);
+            area.setOpaque(false);
+            area.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 14));
 
-    javax.swing.JScrollPane pane = new javax.swing.JScrollPane(area);
-    pane.setBorder(null);
-    pane.setPreferredSize(new java.awt.Dimension(380, 230));
+            javax.swing.JScrollPane pane = new javax.swing.JScrollPane(area);
+            pane.setBorder(null);
+            pane.setPreferredSize(new java.awt.Dimension(380, 230));
 
-    JOptionPane.showMessageDialog(this, pane, "Task Details", JOptionPane.INFORMATION_MESSAGE);
-}
+            JOptionPane.showMessageDialog(this, pane, "Task Details", JOptionPane.INFORMATION_MESSAGE);
+        }
         
         private void applyFilters() {
             String searchText = txtSearch.getText().trim();
-        if (searchText.equals("Search tasks...")) {
-            searchText = "";
-        }
+            if (searchText.equals("Search tasks...")) {
+                searchText = "";
+            }
 
-        String statusFilter = cmbStatus.getSelectedItem().toString();
-        String priorityFilter = cmbPriority.getSelectedItem().toString();
+            String statusFilter = cmbStatus.getSelectedItem().toString();
+            String priorityFilter = cmbPriority.getSelectedItem().toString();
 
-        java.util.List<RowFilter<DefaultTableModel, Object>> filters = new java.util.ArrayList<>();
+            java.util.List<RowFilter<DefaultTableModel, Object>> filters = new java.util.ArrayList<>();
 
-        // 1. Search filter (matches Title or Description)
-        if (!searchText.isEmpty()) {
-            filters.add(RowFilter.regexFilter("(?i)" + Pattern.quote(searchText), 0, 5));
-        }
+            // 1. Search filter (matches Title or Description)
+            if (!searchText.isEmpty()) {
+                filters.add(RowFilter.regexFilter("(?i)" + Pattern.quote(searchText), 0, 5));
+            }
 
-        // 2. Status filter
-        // 2. Status filter: Matches Status column (Column 4)
-        if (!statusFilter.equals("All Statuses")) {
-    String match = statusFilter.equals("Completed") ? "DONE" : statusFilter;
-    filters.add(RowFilter.regexFilter("(?i)^" + match + "$", 4));
-}
+            // 2. Status filter
+            // 2. Status filter: Matches Status column (Column 4)
+            if (!statusFilter.equals("All Statuses")) {
+                String match = statusFilter.equals("Completed") ? "DONE" : statusFilter;
+                filters.add(RowFilter.regexFilter("(?i)^" + match + "$", 4));
+            }
 
         // 3. Priority filter: Maps dropdown choices to your numeric importance column (Column 3)
         if (!priorityFilter.equals("All Priorities")) {
@@ -429,35 +465,33 @@ tblTasks.addMouseListener(new java.awt.event.MouseAdapter() {
 
         txtSearch.setText("Search tasks...");
 
-        btnAddTask.setFont(new java.awt.Font("Segoe UI Emoji", 3, 18)); // NOI18N
-        btnAddTask.setForeground(new java.awt.Color(0, 102, 102));
+        btnAddTask.setBackground(new java.awt.Color(0, 102, 102));
+        btnAddTask.setFont(new java.awt.Font("Segoe UI Emoji", 1, 18)); // NOI18N
+        btnAddTask.setForeground(new java.awt.Color(255, 255, 255));
         btnAddTask.setText("+    Add Task");
         btnAddTask.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, null, new java.awt.Color(102, 102, 102)));
+        btnAddTask.setBorderPainted(false);
         btnAddTask.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
         btnAddTask.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
-        btnEditTask.setFont(new java.awt.Font("Segoe UI Emoji", 3, 18)); // NOI18N
+        btnEditTask.setFont(new java.awt.Font("Segoe UI Emoji", 3, 13)); // NOI18N
         btnEditTask.setForeground(new java.awt.Color(0, 102, 102));
         btnEditTask.setText("✎      Edit Task");
         btnEditTask.setAlignmentY(0.0F);
-        btnEditTask.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, null, new java.awt.Color(153, 153, 153)));
+        btnEditTask.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btnEditTask.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnEditTask.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
         btnEditTask.addActionListener(this::btnEditTaskActionPerformed);
 
-        btnMarkDone.setFont(new java.awt.Font("Segoe UI Emoji", 3, 15)); // NOI18N
+        btnMarkDone.setFont(new java.awt.Font("Segoe UI Emoji", 3, 13)); // NOI18N
         btnMarkDone.setForeground(new java.awt.Color(124, 153, 134));
         btnMarkDone.setText("✓     Mark Done");
-        btnMarkDone.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        btnMarkDone.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
+        btnMarkDone.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btnMarkDone.addActionListener(this::btnMarkDoneActionPerformed);
 
-        btnDeleteTask.setFont(new java.awt.Font("Segoe UI Emoji", 3, 15)); // NOI18N
+        btnDeleteTask.setFont(new java.awt.Font("Segoe UI Emoji", 3, 13)); // NOI18N
         btnDeleteTask.setForeground(new java.awt.Color(139, 77, 77));
         btnDeleteTask.setText("🗑   Delete Task");
-        btnDeleteTask.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        btnDeleteTask.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
-        btnDeleteTask.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnDeleteTask.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         cmbPriority.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "All Priorities", "Low", "Medium", "High" }));
 
@@ -482,6 +516,7 @@ tblTasks.addMouseListener(new java.awt.event.MouseAdapter() {
         lblSubtitle.setText("Your tasks, your time, your balance");
 
         lblTaskCount.setFont(new java.awt.Font("SimSun-ExtG", 0, 14)); // NOI18N
+        lblTaskCount.setForeground(new java.awt.Color(153, 153, 153));
         lblTaskCount.setText("Showing 0 tasks");
 
         javax.swing.GroupLayout pnlMainLayout = new javax.swing.GroupLayout(pnlMain);
@@ -490,58 +525,57 @@ tblTasks.addMouseListener(new java.awt.event.MouseAdapter() {
             pnlMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlMainLayout.createSequentialGroup()
                 .addGap(16, 16, 16)
-                .addGroup(pnlMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(pnlMainLayout.createSequentialGroup()
-                        .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(cmbStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(cmbPriority, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(pnlMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(lblMyTasks)
+                .addGroup(pnlMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblSubtitle)
+                    .addGroup(pnlMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addGroup(pnlMainLayout.createSequentialGroup()
-                            .addComponent(lblTaskCount, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblMyTasks)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(cmbStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(cmbPriority, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(scrollTasks, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 864, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, pnlMainLayout.createSequentialGroup()
+                            .addGroup(pnlMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(lblTaskCount, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btnAddTask, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnEditTask, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(btnAddTask, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(29, 29, 29)
-                            .addComponent(btnEditTask, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(74, 74, 74)
-                            .addComponent(btnMarkDone, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(4, 4, 4)
-                            .addComponent(btnDeleteTask, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addComponent(scrollTasks, javax.swing.GroupLayout.PREFERRED_SIZE, 864, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(lblSubtitle)))
-                .addContainerGap(29, Short.MAX_VALUE))
+                            .addComponent(btnMarkDone, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(btnDeleteTask, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(42, Short.MAX_VALUE))
         );
         pnlMainLayout.setVerticalGroup(
             pnlMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlMainLayout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addComponent(lblMyTasks)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblSubtitle)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(pnlMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtSearch, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(pnlMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(cmbStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(cmbPriority, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(scrollTasks, javax.swing.GroupLayout.PREFERRED_SIZE, 246, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(pnlMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnlMainLayout.createSequentialGroup()
-                        .addGap(19, 19, 19)
-                        .addGroup(pnlMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnAddTask, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
-                            .addGroup(pnlMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(btnMarkDone, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnEditTask, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(btnDeleteTask, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(18, 18, 18)
+                        .addComponent(lblMyTasks))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlMainLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(lblTaskCount)
-                        .addGap(163, 163, 163))))
+                        .addContainerGap()
+                        .addGroup(pnlMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cmbStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cmbPriority, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(lblSubtitle)
+                .addGap(18, 18, 18)
+                .addComponent(scrollTasks, javax.swing.GroupLayout.PREFERRED_SIZE, 293, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblTaskCount)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(pnlMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnAddTask, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(pnlMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnEditTask, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnMarkDone, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnDeleteTask, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(21, Short.MAX_VALUE))
         );
 
         pnlSidebar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -634,9 +668,9 @@ tblTasks.addMouseListener(new java.awt.event.MouseAdapter() {
                 .addComponent(jLabel4)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(lblMyTasks1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 361, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 355, Short.MAX_VALUE)
                 .addComponent(pnlDateNav, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -710,10 +744,10 @@ tblTasks.addMouseListener(new java.awt.event.MouseAdapter() {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(pnlMain, javax.swing.GroupLayout.PREFERRED_SIZE, 456, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(pnlMain, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(pnlSidebar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(25, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pack();
