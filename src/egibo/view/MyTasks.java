@@ -769,7 +769,8 @@ private static final boolean READ_ONLY_PAST_DAYS = true;
     }//GEN-LAST:event_buttonDashboardActionPerformed
 
     private void btnAboutUsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAboutUsActionPerformed
-        // TODO add your handling code here:
+          AboutUsForm aboutUs = new AboutUsForm();
+          aboutUs.setVisible(true);
     }//GEN-LAST:event_btnAboutUsActionPerformed
 
     private void btnEditTaskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditTaskActionPerformed
