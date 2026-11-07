@@ -54,6 +54,7 @@ private static final boolean READ_ONLY_PAST_DAYS = true;
         setSize(1110, 650);
         setMinimumSize(new java.awt.Dimension(1000, 600));
         setLocationRelativeTo(null);
+        
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         this.parentDashboard = parent;
         this.taskManager = taskManager;
@@ -126,90 +127,90 @@ private static final boolean READ_ONLY_PAST_DAYS = true;
         });
     }
     
-        private void refreshTableData() {
-    tableModel.setRowCount(0);
-    displayedTasks = new ArrayList<>();
+    private void refreshTableData() {
+        tableModel.setRowCount(0);
+        displayedTasks = new ArrayList<>();
 
-    for (Task t : taskManager.getAllTasks()) {
-        if (selectedDate.equals(t.getDueDate())) {
-            displayedTasks.add(t);
+        for (Task t : taskManager.getAllTasks()) {
+            if (selectedDate.equals(t.getDueDate())) {
+                displayedTasks.add(t);
+            }
         }
-    }
 
-    for (Task t : displayedTasks) {
-        String completedOn = t.getCompletedAt() != null ? t.getCompletedAt().format(TS_FORMAT) : "—";
-        tableModel.addRow(new Object[]{
-            t.getTitle(), t.getDueDate(), t.getHours(),
-            t.getImportance(), resolveDisplayStatus(t), t.getDescription(), completedOn
-        });
+        for (Task t : displayedTasks) {
+            String completedOn = t.getCompletedAt() != null ? t.getCompletedAt().format(TS_FORMAT) : "—";
+            tableModel.addRow(new Object[]{
+                t.getTitle(), t.getDueDate(), t.getHours(),
+                t.getImportance(), resolveDisplayStatus(t), t.getDescription(), completedOn
+            });
+        }
+        updateTaskCountLabel();
     }
-    updateTaskCountLabel();
-}
 
 /** DONE stays DONE; anything not done on a past day is shown as OVERDUE (missed). */
-private Status resolveDisplayStatus(Task t) {
-    if (t.getStatus() == Status.DONE) return Status.DONE;
-    if (t.getDueDate() != null && t.getDueDate().isBefore(LocalDate.now())) return Status.OVERDUE;
-    return t.getStatus();
-}
+    private Status resolveDisplayStatus(Task t) {
+        if (t.getStatus() == Status.DONE) return Status.DONE;
+        if (t.getDueDate() != null && t.getDueDate().isBefore(LocalDate.now())) return Status.OVERDUE;
+        return t.getStatus();
+    }
 
-        private Task getSelectedTask() {
-            int viewRow = tblTasks.getSelectedRow();
-            if (viewRow == -1) return null;
-            return displayedTasks.get(tblTasks.convertRowIndexToModel(viewRow));
-        }       
+            private Task getSelectedTask() {
+                int viewRow = tblTasks.getSelectedRow();
+                if (viewRow == -1) return null;
+                return displayedTasks.get(tblTasks.convertRowIndexToModel(viewRow));
+            }       
 
-        private void updateTaskCountLabel() {
-            lblTaskCount.setText("Showing " + tblTasks.getRowCount() + " tasks for " + selectedDate);
-        }
-    
-        private void setupCustomListeners() {
-        // --- Sidebar Navigation ---
-        buttonDashboard.addActionListener(e -> {
-            if (parentDashboard != null) {
-                parentDashboard.setVisible(true);
-                parentDashboard.refreshDashboard();
+            private void updateTaskCountLabel() {
+                lblTaskCount.setText("Showing " + tblTasks.getRowCount() + " tasks for " + selectedDate);
             }
-            this.dispose();
-        });
 
-        btnMyTasks.addActionListener(e -> {
-            // Already here, refresh data
-            refreshTableData();
-        });
-
-        // --- Add Task ---
-        btnAddTask.addActionListener(e -> {
-            AddTaskForm form = new AddTaskForm(parentDashboard, taskManager);
-            form.setVisible(true);
-        });
-
-        // --- Search Box Placeholder & Key Listener ---
-        txtSearch.setForeground(java.awt.Color.GRAY);
-        txtSearch.setText("Search tasks...");
-        txtSearch.addFocusListener(new java.awt.event.FocusAdapter() {
-            @Override
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                if (txtSearch.getText().equals("Search tasks...")) {
-                    txtSearch.setText("");
-                    txtSearch.setForeground(java.awt.Color.BLACK);
+            private void setupCustomListeners() {
+            // --- Sidebar Navigation ---
+            buttonDashboard.addActionListener(e -> {
+                if (parentDashboard != null) {
+                    parentDashboard.setVisible(true);
+                    parentDashboard.refreshDashboard();
                 }
-            }
-            @Override
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                if (txtSearch.getText().isEmpty()) {
-                    txtSearch.setForeground(java.awt.Color.GRAY);
-                    txtSearch.setText("Search tasks...");
-                }
-            }
-        });
+                this.dispose();
+            });
 
-        txtSearch.addKeyListener(new java.awt.event.KeyAdapter() {
-            @Override
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                applyFilters();
-            }
-        });
+            btnMyTasks.addActionListener(e -> {
+                // Already here, refresh data
+                refreshTableData();
+            });
+
+            // --- Add Task ---
+            btnAddTask.addActionListener(e -> {
+                AddTaskForm form = new AddTaskForm(parentDashboard, taskManager);
+                form.setVisible(true);
+            });
+
+            // --- Search Box Placeholder & Key Listener ---
+            txtSearch.setForeground(java.awt.Color.GRAY);
+            txtSearch.setText("Search tasks...");
+            txtSearch.addFocusListener(new java.awt.event.FocusAdapter() {
+                @Override
+                public void focusGained(java.awt.event.FocusEvent evt) {
+                    if (txtSearch.getText().equals("Search tasks...")) {
+                        txtSearch.setText("");
+                        txtSearch.setForeground(java.awt.Color.BLACK);
+                    }
+                }
+                @Override
+                public void focusLost(java.awt.event.FocusEvent evt) {
+                    if (txtSearch.getText().isEmpty()) {
+                        txtSearch.setForeground(java.awt.Color.GRAY);
+                        txtSearch.setText("Search tasks...");
+                    }
+                }
+            });
+
+            txtSearch.addKeyListener(new java.awt.event.KeyAdapter() {
+                @Override
+                public void keyReleased(java.awt.event.KeyEvent evt) {
+                    applyFilters();
+                }
+            });
 
         // --- Dropdown Filters ---
         cmbStatus.addActionListener(e -> applyFilters());
@@ -479,6 +480,7 @@ private Status resolveDisplayStatus(Task t) {
         btnEditTask.setText("✎      Edit Task");
         btnEditTask.setAlignmentY(0.0F);
         btnEditTask.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnEditTask.setBorderPainted(false);
         btnEditTask.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnEditTask.addActionListener(this::btnEditTaskActionPerformed);
 
@@ -486,12 +488,14 @@ private Status resolveDisplayStatus(Task t) {
         btnMarkDone.setForeground(new java.awt.Color(124, 153, 134));
         btnMarkDone.setText("✓     Mark Done");
         btnMarkDone.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnMarkDone.setBorderPainted(false);
         btnMarkDone.addActionListener(this::btnMarkDoneActionPerformed);
 
         btnDeleteTask.setFont(new java.awt.Font("Segoe UI Emoji", 3, 13)); // NOI18N
         btnDeleteTask.setForeground(new java.awt.Color(139, 77, 77));
         btnDeleteTask.setText("🗑   Delete Task");
         btnDeleteTask.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnDeleteTask.setBorderPainted(false);
 
         cmbPriority.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "All Priorities", "Low", "Medium", "High" }));
 
@@ -670,7 +674,7 @@ private Status resolveDisplayStatus(Task t) {
                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(lblMyTasks1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 355, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 372, Short.MAX_VALUE)
                 .addComponent(pnlDateNav, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -688,7 +692,7 @@ private Status resolveDisplayStatus(Task t) {
                         .addContainerGap())
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                         .addComponent(pnlDateNav, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(17, 17, 17))))
+                        .addGap(15, 15, 15))))
         );
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -714,8 +718,8 @@ private Status resolveDisplayStatus(Task t) {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -730,10 +734,9 @@ private Status resolveDisplayStatus(Task t) {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
                         .addComponent(pnlSidebar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(pnlMain, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
