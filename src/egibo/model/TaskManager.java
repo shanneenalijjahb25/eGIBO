@@ -248,5 +248,19 @@ public class TaskManager {
         return count;
     }
     
+    public boolean willExceedCapacity(java.time.LocalDate date, double newTaskHours, double dailyCapacity) {
+        double currentBookedHours = 0.0;
+
+        // Sum up hours for tasks already scheduled on that date
+        for (egibo.model.Task t : getAllTasks()) {
+            if (t.getDueDate() != null && t.getDueDate().equals(date)) {
+                currentBookedHours += t.getHours();
+            }
+        }
+
+        // Check if adding the new task breaches the daily capacity limit
+        return (currentBookedHours + newTaskHours) > dailyCapacity;
+    }
+    
 }
 

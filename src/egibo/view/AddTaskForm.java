@@ -475,6 +475,28 @@ public class AddTaskForm extends javax.swing.JFrame {
                     javax.swing.JOptionPane.WARNING_MESSAGE);
                 return; // Stops saving/adding
             }
+            
+            // === 1. CALCULATE NEW TASK HOURS FIRST ===
+            double newTaskHours = 0.0;
+            if (rbFixedTask.isSelected()) {
+                LocalTime tempStart = LocalTime.parse(txtboxStartTime.getText().trim()); 
+                LocalTime tempEnd = LocalTime.parse(txtboxEndTime.getText().trim()); 
+                newTaskHours = egibo.model.FixedTask.computeHours(tempStart, tempEnd);
+            } else {
+                newTaskHours = Double.parseDouble(txtboxHours.getText().trim());
+            }
+
+            // === 2. CHECK DAILY CAPACITY LIMIT VIA TASKMANAGER ===
+            double dailyCapacity = parentDashboard.getStudentProfile().dailyCapacity();
+            
+            if (taskManager.willExceedCapacity(taskDate, newTaskHours, dailyCapacity)) {
+                javax.swing.JOptionPane.showMessageDialog(this, 
+                    "Daily capacity limit reached (" + dailyCapacity + " hrs for " + taskDate + ")!\n" +
+                    "You must accomplish initial tasks,\n or delete an existing task before adding more.", 
+                    "Capacity Exceeded", 
+                    javax.swing.JOptionPane.WARNING_MESSAGE);
+                return; // Stops task creation
+            }
 
             if (rbFixedTask.isSelected()) {
                 LocalTime startTime = LocalTime.parse(txtboxStartTime.getText().trim()); 

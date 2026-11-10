@@ -41,6 +41,10 @@ public class Dashboard extends javax.swing.JFrame {
         });
     }
     
+    public egibo.model.StudentProfile getStudentProfile() {
+        return this.studentProfile;
+    }
+    
     public void refreshDashboard() {
     // 1. Welcome Header & Date
     // (Replace lblWelcome and lblDate with your actual JLabel variable names from the designer)
@@ -76,6 +80,7 @@ public class Dashboard extends javax.swing.JFrame {
             t.getStatus()
         });
     }
+    
 }
     
     /**
