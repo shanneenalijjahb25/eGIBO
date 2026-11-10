@@ -468,7 +468,7 @@ public class Dashboard extends javax.swing.JFrame {
         );
 
         pnlCompletedCard1.setBackground(new java.awt.Color(196, 225, 225));
-        pnlCompletedCard1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED, java.awt.Color.white, null));
+        pnlCompletedCard1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED, java.awt.Color.white, java.awt.Color.gray, java.awt.Color.gray, java.awt.Color.gray));
         pnlCompletedCard1.setForeground(java.awt.Color.gray);
 
         lblCompletedTitle1.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
