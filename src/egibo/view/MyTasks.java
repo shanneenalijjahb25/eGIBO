@@ -470,8 +470,7 @@ private static final boolean READ_ONLY_PAST_DAYS = true;
         btnAddTask.setFont(new java.awt.Font("Segoe UI Emoji", 1, 18)); // NOI18N
         btnAddTask.setForeground(new java.awt.Color(255, 255, 255));
         btnAddTask.setText("+    Add Task");
-        btnAddTask.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, null, new java.awt.Color(102, 102, 102)));
-        btnAddTask.setBorderPainted(false);
+        btnAddTask.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.lightGray, java.awt.Color.lightGray, new java.awt.Color(102, 102, 102), java.awt.Color.lightGray));
         btnAddTask.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
         btnAddTask.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
@@ -579,7 +578,7 @@ private static final boolean READ_ONLY_PAST_DAYS = true;
                         .addComponent(btnEditTask, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(btnMarkDone, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(btnDeleteTask, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(21, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pnlSidebar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
