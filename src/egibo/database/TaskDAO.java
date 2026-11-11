@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.Timestamp;
 
 public class TaskDAO {
 
@@ -112,7 +113,13 @@ public class TaskDAO {
 
                     task.setTaskId(rs.getInt("task_id"));
                     task.setStatus(Status.valueOf(rs.getString("status")));
-
+                    
+                    // Restore original creation timestamp from database
+                    Timestamp createdTimestamp = rs.getTimestamp("created_at");
+                             
+                    if(createdTimestamp != null) {
+                        task.setCreatedAt(createdTimestamp.toLocalDateTime());
+                    }
                     loadedTasks.add(task);
                 }
             }
