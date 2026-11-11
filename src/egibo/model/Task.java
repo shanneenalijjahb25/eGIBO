@@ -24,7 +24,7 @@ public abstract class Task {
             throw new IllegalArgumentException("Hours must be greater than 0.");
         }  
         if (title == null || title.trim().isEmpty()){
-            this.title = "Task" + ++taskCounter;
+            this.title = "Untitled Task " + ++taskCounter;
         } 
         else {
             this.title = title.trim();

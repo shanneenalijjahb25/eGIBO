@@ -55,33 +55,41 @@ public class TaskManager {
         this.tasks.addAll(taskDAO.loadTasks(userId));
     }
 
-    public void addFlexibleTask(
+    public boolean addFlexibleTask(
             String title, String description, double hours,
             int importance, LocalDate dueDate,
             LocalTime workStartTime) {
 
-        FlexibleTask task = new FlexibleTask(
-                title, description, hours, importance,
-                dueDate, workStartTime);
-
+        FlexibleTask task = new FlexibleTask(title, description, hours, importance, dueDate, workStartTime);
+        
+        for (Task existingTask : getTasksForToday()) {
+            if (existingTask.occupiesTime(task)) {
+                return false; // Conflict found! Do not add.
+            }
+    }
         saveNewTask(task);
         tasks.add(task);
+        return true;
     }
 
-    public void addFixedTask(
+    public boolean addFixedTask(
             LocalTime startTime, LocalTime endTime,
             String title, String description, double hours,
             int importance, LocalDate dueDate) {
 
-        FixedTask task = new FixedTask(
-                startTime, endTime, title, description,
-                0.0, importance, dueDate);
+        FixedTask task = new FixedTask(startTime, endTime, title, description, 0.0, importance, dueDate);
 
+        for (Task existingTask : getTasksForToday()) {
+            if (existingTask.occupiesTime(task)) {
+                return false; // Conflict found! Do not add.
+            }
+        }   
         saveNewTask(task);
         tasks.add(task);
+        return true;
     }
 
-    private void saveNewTask(Task task) {
+    private void saveNewTask(Task task){
         if (userId > 0) {
             try {
                 if (!taskDAO.saveTask(userId, task)) {

@@ -438,7 +438,7 @@ public class AddTaskForm extends javax.swing.JFrame {
             String description = txtboxDescription.getText().trim();
             
             if (title.isEmpty() || title.equalsIgnoreCase("Title...") || title.equalsIgnoreCase("Task Title")) {
-            title = "Untitled Task";
+            title = "";
             }
 
             // Priority Extraction
@@ -502,67 +502,32 @@ public class AddTaskForm extends javax.swing.JFrame {
                 LocalTime startTime = LocalTime.parse(txtboxStartTime.getText().trim()); 
                 LocalTime endTime = LocalTime.parse(txtboxEndTime.getText().trim()); 
                 
-                egibo.model.FixedTask newTask = new egibo.model.FixedTask(
-                    startTime,  
-                    endTime,     
-                    title,       
-                    description, 
-                    0.0,         
-                    importance, 
-                    taskDate
-                );
+                // Call TaskManager to create and check in one go
+                boolean isAdded = taskManager.addFixedTask(startTime, endTime, title, description, 0.0, importance, taskDate);
                 
-                // Polymorphic conflict check
-                for (egibo.model.Task existingTask : taskManager.getTasksForToday()) {
-                    if (existingTask.occupiesTime(newTask)) {
-                        hasConflict = true;  
-                        break;
-                    }
-                }
-                
-                if (hasConflict) {
+                if (!isAdded) {
                     javax.swing.JOptionPane.showMessageDialog(this, 
                         "Warning: This scheduled time slot conflicts with an existing task!", 
                         "Schedule Conflict", 
                         javax.swing.JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-                
-                taskManager.addFixedTask(startTime, endTime, title, description, 0.0, importance, taskDate);
-
+             
             } else {
                 // Flexible Task: Read hours and scheduled work start time
                 double hours = Double.parseDouble(txtboxHours.getText().trim());
                 LocalTime workStartTime = LocalTime.parse(txtboxFlexTime.getText().trim());
                 
-                // Instantiate FlexibleTask with the new workStartTime parameter
-                egibo.model.FlexibleTask newTask = new egibo.model.FlexibleTask(
-                    title, 
-                    description, 
-                    hours, 
-                    importance, 
-                    taskDate, 
-                    workStartTime
-                );
+                boolean isAdded = taskManager.addFlexibleTask(title, description, hours, importance, taskDate, workStartTime);
                 
-                // Run the conflict check against pending tasks
-                for (egibo.model.Task existingTask : taskManager.getTasksForToday()) {
-                    if (existingTask.occupiesTime(newTask)) {
-                        hasConflict = true;
-                        break;
-                    }
-                }
-                
-                if (hasConflict) {
+                if (!isAdded) {
                     javax.swing.JOptionPane.showMessageDialog(this, 
                         "Warning: This scheduled working time conflicts with an existing task allocation!", 
                         "Schedule Conflict", 
                         javax.swing.JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-                
-                // Save to taskManager (update parameters here if your addFlexibleTask method also needs workStartTime)
-                taskManager.addFlexibleTask(title, description, hours, importance, taskDate, workStartTime);
+      
             }
 
             if (parentDashboard != null) {
