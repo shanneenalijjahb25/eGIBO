@@ -39,17 +39,31 @@ public class FixedTask extends Task{
     @Override
     public boolean occupiesTime(Task otherTask) {
         if (this.getDueDate() == null || otherTask.getDueDate() == null) return false;
-    if (!this.getDueDate().equals(otherTask.getDueDate())) return false;
-    
-    LocalTime otherTime = null;
-    if (otherTask instanceof FixedTask) {
-        otherTime = ((FixedTask) otherTask).getStartTime();
-    } else if (otherTask instanceof FlexibleTask) {
-        otherTime = ((FlexibleTask) otherTask).getWorkStartTime();
-    }
-    
-    // Make sure neither startTime nor otherTime is null before comparing
-    return this.startTime != null && otherTime != null && this.startTime.equals(otherTime);
+        if (!this.getDueDate().equals(otherTask.getDueDate())) return false;
+        if (this.startTime == null || this.endTime == null) return false;
+
+        LocalTime otherStart = null;
+        LocalTime otherEnd = null;
+
+        if (otherTask instanceof FixedTask) {
+            FixedTask otherFixed = (FixedTask) otherTask;
+            otherStart = otherFixed.getStartTime();
+            otherEnd = otherFixed.getEndTime();
+        } else if (otherTask instanceof FlexibleTask) {
+            FlexibleTask otherFlex = (FlexibleTask) otherTask;
+            otherStart = otherFlex.getWorkStartTime();
+            if (otherStart != null) {
+                // Calculate the end time of the flexible task using its estimated hours
+                long minutes = Math.round(otherFlex.getHours() * 60);
+                otherEnd = otherStart.plusMinutes(minutes);
+            }
+        }
+
+        // If the other task has no specific time assigned, no time conflict occurs
+        if (otherStart == null || otherEnd == null) return false;
+
+        // Interval overlap formula: (StartA < EndB) && (EndA > StartB)
+        return this.startTime.isBefore(otherEnd) && this.endTime.isAfter(otherStart);
     }
     
     @Override

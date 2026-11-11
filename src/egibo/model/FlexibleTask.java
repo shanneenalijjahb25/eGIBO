@@ -24,22 +24,36 @@ public class FlexibleTask extends Task{
     
     @Override
     public boolean occupiesTime(Task otherTask) {
-        if (this.getDueDate() == null || otherTask.getDueDate() == null) {
-            return false;
-        }
-        // If dates don't match, no conflict
-        if (!this.getDueDate().equals(otherTask.getDueDate())) {
-            return false;
-        }
+        if (this.getDueDate() == null || otherTask.getDueDate() == null) return false;
+        if (!this.getDueDate().equals(otherTask.getDueDate())) return false;
+        if (this.workStartTime == null) return false;
         
-        LocalTime otherTime = null;
+        // Calculate this flexible task's end time based on its working hours
+        long thisMinutes = Math.round(this.getHours() * 60);
+        LocalTime thisEnd = this.workStartTime.plusMinutes(thisMinutes);
+
+        LocalTime otherStart = null;
+        LocalTime otherEnd = null;
+
         if (otherTask instanceof FixedTask) {
-            otherTime = ((FixedTask) otherTask).getStartTime();
+            FixedTask otherFixed = (FixedTask) otherTask;
+            otherStart = otherFixed.getStartTime();
+            otherEnd = otherFixed.getEndTime();
         } else if (otherTask instanceof FlexibleTask) {
-            otherTime = ((FlexibleTask) otherTask).getWorkStartTime();
+            FlexibleTask otherFlex = (FlexibleTask) otherTask;
+            otherStart = otherFlex.getWorkStartTime();
+            if (otherStart != null) {
+                long otherMinutes = Math.round(otherFlex.getHours() * 60);
+                otherEnd = otherStart.plusMinutes(otherMinutes);
+            }
         }
-        
-        return this.workStartTime != null && this.workStartTime.equals(otherTime);
+
+        if (otherStart == null || otherEnd == null) {
+            return false;
+        }
+
+        // Interval overlap formula: (StartA < EndB) && (EndA > StartB)
+        return this.workStartTime.isBefore(otherEnd) && thisEnd.isAfter(otherStart);
     }
     
     @Override
