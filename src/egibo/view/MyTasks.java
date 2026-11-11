@@ -27,7 +27,7 @@ public class MyTasks extends javax.swing.JFrame {
     private static final DateTimeFormatter TS_FORMAT = DateTimeFormatter.ofPattern("MMM dd, yyyy hh:mm a");
 
 // Set to false if you still want Edit / Mark Done / Delete on past days
-private static final boolean READ_ONLY_PAST_DAYS = true;
+private static final boolean READ_ONLY_PAST_DAYS = false;
     
     private Dashboard parentDashboard;
     private TaskManager taskManager;
@@ -217,17 +217,21 @@ private static final boolean READ_ONLY_PAST_DAYS = true;
         cmbPriority.addActionListener(e -> applyFilters());
 
         // --- Mark Done ---
-        btnMarkDone.addActionListener(e -> {
-            Task task = getSelectedTask();
-            if (task == null) {
-                JOptionPane.showMessageDialog(this, "Please select a task from the table first.",
-                        "Selection Required", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-            task.setStatus(task.getStatus() == Status.DONE ? Status.PENDING : Status.DONE);
-            refreshTableData();
-            if (parentDashboard != null) parentDashboard.refreshDashboard();
-        });
+btnMarkDone.addActionListener(e -> {
+    Task task = getSelectedTask();
+    if (task == null) {
+        JOptionPane.showMessageDialog(this, "Please select a task from the table first.",
+                "Selection Required", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+    if (task.getStatus() == Status.DONE) {
+        taskManager.markTaskPending(task);
+    } else {
+        taskManager.markTaskDone(task);
+    }
+    refreshTableData();
+    if (parentDashboard != null) parentDashboard.refreshDashboard();
+}); 
 
         // --- Delete ---
         btnDeleteTask.addActionListener(e -> {
@@ -246,29 +250,36 @@ private static final boolean READ_ONLY_PAST_DAYS = true;
             }
         });
 
-        // --- Edit ---
-        btnEditTask.addActionListener(e -> {
+       // --- Edit ---
+btnEditTask.addActionListener(e -> {
+    Task task = getSelectedTask();
+    if (task == null) {
+        JOptionPane.showMessageDialog(this, "Please select a task from the table to edit.",
+                "No Task Selected", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+    EditTaskForm form = new EditTaskForm(parentDashboard, taskManager, task);
+    form.addWindowListener(new java.awt.event.WindowAdapter() {
+        @Override
+        public void windowClosed(java.awt.event.WindowEvent ev) {
+            refreshTableData();
+        }
+    });
+    form.setVisible(true);
+});
+// --- Double-click: Task Detail Inspector ---
+tblTasks.addMouseListener(new java.awt.event.MouseAdapter() {
+    @Override
+    public void mouseClicked(java.awt.event.MouseEvent evt) {
+        if (evt.getClickCount() == 2 && javax.swing.SwingUtilities.isLeftMouseButton(evt)) {
+            int viewRow = tblTasks.rowAtPoint(evt.getPoint());
+            if (viewRow < 0) return; // clicked empty space
+            tblTasks.setRowSelectionInterval(viewRow, viewRow);
             Task task = getSelectedTask();
-            if (task == null) {
-                JOptionPane.showMessageDialog(this, "Please select a task from the table to edit.",
-                        "No Task Selected", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-            new EditTaskForm(parentDashboard, taskManager, task).setVisible(true);
-            });
-        // --- Double-click: Task Detail Inspector ---
-        tblTasks.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                if (evt.getClickCount() == 2 && javax.swing.SwingUtilities.isLeftMouseButton(evt)) {
-                    int viewRow = tblTasks.rowAtPoint(evt.getPoint());
-                    if (viewRow < 0) return; // clicked empty space
-                    tblTasks.setRowSelectionInterval(viewRow, viewRow);
-                    Task task = getSelectedTask();
-                    if (task != null) showTaskDetails(task);
-                }
-            }
-        });
+            if (task != null) showTaskDetails(task);
+        }
+    }
+});
         }
         
         private void showTaskDetails(Task task) {
@@ -300,7 +311,7 @@ private static final boolean READ_ONLY_PAST_DAYS = true;
             area.setLineWrap(true);
             area.setWrapStyleWord(true);
             area.setOpaque(false);
-            area.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 14));
+            area.setFont(new java.awt.Font("Segoe UI Symbol", java.awt.Font.PLAIN, 14));
 
             javax.swing.JScrollPane pane = new javax.swing.JScrollPane(area);
             pane.setBorder(null);

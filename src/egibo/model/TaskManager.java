@@ -103,7 +103,8 @@ public class TaskManager {
 
         // Preserve the original task's ID and status.
         editedTask.setTaskId(originalTask.getTaskId());
-        editedTask.setStatus(originalTask.getStatus());
+       editedTask.setStatus(originalTask.getStatus() == Status.OVERDUE
+        ? Status.PENDING : originalTask.getStatus());
 
         if (userId > 0) {
             try {
@@ -160,7 +161,27 @@ public class TaskManager {
             }
         }
     }
+public void markTaskPending(Task task) {
+    if (!tasks.contains(task)) {
+        return;
+    }
 
+    Status previousStatus = task.getStatus();
+    task.setStatus(Status.PENDING);
+
+    if (userId > 0 && task.getTaskId() > 0) {
+        try {
+            if (!taskDAO.updateTaskStatus(userId, task)) {
+                task.setStatus(previousStatus);
+                throw new SQLException("Task status was not updated.");
+            }
+        } catch (SQLException e) {
+            task.setStatus(previousStatus);
+            throw new IllegalStateException(
+                    "Could not update task status in the database.", e);
+        }
+    }
+}
     // Clears the in-memory list only.
     public void clear() {
         tasks.clear();
